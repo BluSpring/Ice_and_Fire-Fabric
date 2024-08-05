@@ -5,6 +5,7 @@ import com.github.alexthe666.iceandfire.block.IafBlockRegistry;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.github.alexthe666.iceandfire.item.ItemMobSkull;
 import com.github.alexthe666.iceandfire.item.ItemSeaSerpentScales;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -15,8 +16,6 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -71,8 +70,8 @@ public class IafItemTags extends ItemTagsProvider {
     public static TagKey<Item> TEMPT_HIPPOCAMPUS = createKey("tempt_hippocampus");
     public static TagKey<Item> TEMPT_HIPPOGRYPH = createKey("tempt_hippogryph");
 
-    public IafItemTags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> blockTags, ExistingFileHelper helper) {
-        super(output, lookupProvider, blockTags, IceAndFire.MODID, helper);
+    public IafItemTags(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> blockTags) {
+        super(output, lookupProvider, blockTags);
     }
 
     @Override
@@ -312,7 +311,7 @@ public class IafItemTags extends ItemTagsProvider {
     }
 
     private static TagKey<Item> createKey(final String name) {
-        return ItemTags.create(new ResourceLocation(IceAndFire.MODID, name));
+        return TagKey.create(Registries.ITEM, new ResourceLocation(IceAndFire.MODID, name));
     }
 
     private static TagKey<Item> createForgeKey(final String name) {

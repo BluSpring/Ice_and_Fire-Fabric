@@ -4,7 +4,6 @@ import com.github.alexthe666.iceandfire.IceAndFire;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.network.PacketDistributor;
 
 public class EntityData {
     public FrozenData frozenData = new FrozenData();
@@ -27,9 +26,9 @@ public class EntityData {
 
         if (triggerClientUpdate && !entity.level().isClientSide()) {
             if (entity instanceof ServerPlayer serverPlayer) {
-                IceAndFire.NETWORK_WRAPPER.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> serverPlayer), new SyncEntityData(entity.getId(), serialize()));
+                IceAndFire.NETWORK_WRAPPER.sendToClientsTrackingAndSelf(new SyncEntityData(entity.getId(), serialize()), serverPlayer);
             } else {
-                IceAndFire.NETWORK_WRAPPER.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), new SyncEntityData(entity.getId(), serialize()));
+                IceAndFire.NETWORK_WRAPPER.sendToClientsTracking(new SyncEntityData(entity.getId(), serialize()), entity);
             }
         }
     }

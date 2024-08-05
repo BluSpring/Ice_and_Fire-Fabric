@@ -13,8 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -25,7 +25,7 @@ public class PixieAIPickupItem<T extends ItemEntity> extends TargetGoal {
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected ItemEntity targetEntity;
 
-    @Nonnull
+    @NotNull
     private List<ItemEntity> list = IAFMath.emptyItemEntityList;
 
     public PixieAIPickupItem(EntityPixie creature, boolean checkSight) {

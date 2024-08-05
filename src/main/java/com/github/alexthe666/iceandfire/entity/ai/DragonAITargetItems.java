@@ -9,8 +9,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -25,7 +25,7 @@ public class DragonAITargetItems<T extends ItemEntity> extends TargetGoal {
 
     protected ItemEntity targetEntity;
 
-    @Nonnull
+    @NotNull
     private List<ItemEntity> list = IAFMath.emptyItemEntityList;
 
     public DragonAITargetItems(EntityDragonBase creature, boolean checkSight) {

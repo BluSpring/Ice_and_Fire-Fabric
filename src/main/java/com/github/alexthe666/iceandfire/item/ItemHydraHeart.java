@@ -1,5 +1,6 @@
 package com.github.alexthe666.iceandfire.item;
 
+import io.github.fabricators_of_create.porting_lib.item.ReequipAnimationItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -12,10 +13,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
-public class ItemHydraHeart extends Item {
+public class ItemHydraHeart extends Item implements ReequipAnimationItem {
 
     public ItemHydraHeart() {
         super(new Item.Properties()/*.tab(IceAndFire.TAB_ITEMS)*/.stacksTo(1));

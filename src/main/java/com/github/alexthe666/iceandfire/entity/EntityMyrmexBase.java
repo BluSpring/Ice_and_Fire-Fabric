@@ -19,8 +19,10 @@ import com.github.alexthe666.iceandfire.pathfinding.raycoms.pathjobs.ICustomSize
 import com.github.alexthe666.iceandfire.world.MyrmexWorldData;
 import com.github.alexthe666.iceandfire.world.gen.WorldGenMyrmexHive;
 import com.google.common.collect.Sets;
+import io.github.fabricators_of_create.porting_lib.entity.ITeleporter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
@@ -31,7 +33,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
@@ -42,6 +44,7 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Equipable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.Merchant;
@@ -55,8 +58,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.UUID;
 
@@ -111,7 +114,7 @@ public abstract class EntityMyrmexBase extends Animal implements IAnimatedEntity
     }
 
     public static boolean isEdibleBlock(BlockState blockState) {
-        return blockState.is(BlockTags.create(IafTagRegistry.MYRMEX_HARVESTABLES));
+        return blockState.is(TagKey.create(Registries.BLOCK, IafTagRegistry.MYRMEX_HARVESTABLES));
     }
 
     public static int getRandomCaste(Level world, RandomSource random, boolean royal) {
@@ -785,8 +788,7 @@ public abstract class EntityMyrmexBase extends Animal implements IAnimatedEntity
     }
 
     @Override
-    @Nullable
-    public Entity changeDimension(@NotNull ServerLevel server, net.minecraftforge.common.util.@NotNull ITeleporter teleporter) {
+    public Entity changeDimension(ServerLevel server, ITeleporter teleporter) {
         this.resetCustomer();
         return super.changeDimension(server, teleporter);
     }
@@ -802,7 +804,12 @@ public abstract class EntityMyrmexBase extends Animal implements IAnimatedEntity
         if (ItemStack.isSameItem(superStack, stack) && ItemStack.matches(superStack, stack)) {
             return stack;
         } else {
-            EquipmentSlot inventorySlot = stack.getEquipmentSlot();
+            var item = stack.getItem();
+
+            if (!(item instanceof Equipable equipable))
+                return ItemStack.EMPTY;
+
+            EquipmentSlot inventorySlot = equipable.getEquipmentSlot();
             int i = inventorySlot.getIndex() - 300;
             if (i >= 0 && i < this.villagerInventory.getContainerSize()) {
                 this.villagerInventory.setItem(i, stack);

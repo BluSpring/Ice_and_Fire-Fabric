@@ -23,8 +23,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import static com.github.alexthe666.iceandfire.entity.tile.IafTileEntityRegistry.DRAGONFORGE_CORE;
 
@@ -42,6 +41,7 @@ public class BlockDragonforgeCore extends BaseEntityBlock implements IDragonProo
                 .strength(40, 500)
                 .sound(SoundType.METAL)
                 .lightLevel((state) -> activated ? 15 : 0)
+                .pushReaction(PushReaction.BLOCK)
         );
 
         this.isFire = isFire;
@@ -86,11 +86,6 @@ public class BlockDragonforgeCore extends BaseEntityBlock implements IDragonProo
             tileentity.clearRemoved();
             worldIn.setBlockEntity(tileentity);
         }
-    }
-
-    @Override
-    public @NotNull PushReaction getPistonPushReaction(@NotNull BlockState state) {
-        return PushReaction.BLOCK;
     }
 
     @Override

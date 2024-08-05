@@ -13,8 +13,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class GorgonTempleProcessor extends StructureProcessor {
 
@@ -24,9 +23,9 @@ public class GorgonTempleProcessor extends StructureProcessor {
     public GorgonTempleProcessor() {
     }
 
+    @Nullable
     @Override
-    public StructureTemplate.StructureBlockInfo process(@NotNull LevelReader worldReader, @NotNull BlockPos pos, @NotNull BlockPos pos2, StructureTemplate.@NotNull StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo infoIn2, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
-
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader worldReader, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo infoIn2, StructurePlaceSettings settings) {
         // Workaround for https://bugs.mojang.com/browse/MC-130584
         // Due to a hardcoded field in Templates, any waterloggable blocks in structures replacing water in the world will become waterlogged.
         // Idea of workaround is detect if we are placing a waterloggable block and if so, remove the water in the world instead.

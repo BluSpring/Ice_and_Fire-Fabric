@@ -14,8 +14,10 @@ import com.github.alexthe666.iceandfire.entity.util.ICustomMoveController;
 import com.github.alexthe666.iceandfire.entity.util.ISyncMount;
 import com.github.alexthe666.iceandfire.inventory.HippocampusContainerMenu;
 import com.github.alexthe666.iceandfire.misc.IafSoundRegistry;
+import io.github.fabricators_of_create.porting_lib.entity.events.LivingEntityEvents;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
+import io.github.fabricators_of_create.porting_lib.util.NetworkHooks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -53,15 +55,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidType;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityHippocampus extends TamableAnimal implements ISyncMount, IAnimatedEntity, ICustomMoveController, ContainerListener, Saddleable {
 
@@ -160,7 +155,7 @@ public class EntityHippocampus extends TamableAnimal implements ISyncMount, IAni
     }
 
     @Override
-    public boolean isPushedByFluid(FluidType fluid) {
+    public boolean isPushedByFluid() {
         return false;
     }
 
@@ -331,7 +326,8 @@ public class EntityHippocampus extends TamableAnimal implements ISyncMount, IAni
             if (this.isGoingUp()) {
                 if (!this.isInWater() && this.onGround()) {
                     this.jumpFromGround();
-                    net.minecraftforge.common.ForgeHooks.onLivingJump(this);
+                    var event = new LivingEntityEvents.LivingJumpEvent(this);
+                    event.sendEvent();
                 } else if (this.isInWater()) {
                     this.setDeltaMovement(vec3.add(0, 0.04F, 0));
                 }
@@ -438,7 +434,7 @@ public class EntityHippocampus extends TamableAnimal implements ISyncMount, IAni
 
         this.inventory.addListener(this);
         this.updateContainerEquipment();
-        this.itemHandler = LazyOptional.of(() -> new InvWrapper(this.inventory));
+        //this.itemHandler = LazyOptional.of(() -> new InvWrapper(this.inventory));
     }
 
     protected void updateContainerEquipment() {
@@ -446,23 +442,6 @@ public class EntityHippocampus extends TamableAnimal implements ISyncMount, IAni
             this.setSaddled(!this.inventory.getItem(INV_SLOT_SADDLE).isEmpty());
             this.setChested(!this.inventory.getItem(INV_SLOT_CHEST).isEmpty());
             this.setArmor(getIntFromArmor(this.inventory.getItem(INV_SLOT_ARMOR)));
-        }
-    }
-
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
-        if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
-            return itemHandler.cast();
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        if (itemHandler != null) {
-            LazyOptional<?> oldHandler = itemHandler;
-            itemHandler = null;
-            oldHandler.invalidate();
         }
     }
 
@@ -567,8 +546,8 @@ public class EntityHippocampus extends TamableAnimal implements ISyncMount, IAni
     }
 
     @Override
-    public boolean canDrownInFluidType(FluidType type) {
-        return false;
+    public boolean canBreatheUnderwater() {
+        return true;
     }
 
     @Override

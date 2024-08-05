@@ -3,6 +3,7 @@ package com.github.alexthe666.iceandfire.entity;
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.entity.util.IBlacklistedFromStatues;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -13,7 +14,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityStoneStatue extends LivingEntity implements IBlacklistedFromStatues {
@@ -51,7 +51,7 @@ public class EntityStoneStatue extends LivingEntity implements IBlacklistedFromS
             IceAndFire.LOGGER.debug("Encountered issue creating stone statue from {}", parent);
         }
         statue.setTrappedTag(entityTag);
-        statue.setTrappedEntityTypeString(ForgeRegistries.ENTITY_TYPES.getKey(parent.getType()).toString());
+        statue.setTrappedEntityTypeString(BuiltInRegistries.ENTITY_TYPE.getKey(parent.getType()).toString());
         statue.setTrappedEntityWidth(parent.getBbWidth());
         statue.setTrappedHeight(parent.getBbHeight());
         statue.setTrappedScale(parent.getScale());

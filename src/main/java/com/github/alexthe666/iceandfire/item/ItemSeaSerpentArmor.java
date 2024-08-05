@@ -3,9 +3,17 @@ package com.github.alexthe666.iceandfire.item;
 import com.github.alexthe666.citadel.server.item.CustomArmorMaterial;
 import com.github.alexthe666.iceandfire.client.model.armor.ModelSeaSerpentArmor;
 import com.github.alexthe666.iceandfire.enums.EnumSeaSerpent;
+import io.github.fabricators_of_create.porting_lib.client.armor.ArmorRendererRegistry;
+import io.github.fabricators_of_create.porting_lib.item.ArmorTextureItem;
+import io.github.fabricators_of_create.porting_lib.item.ArmorTickListeningItem;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -17,20 +25,23 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class ItemSeaSerpentArmor extends ArmorItem {
+public class ItemSeaSerpentArmor extends ArmorItem implements ArmorTextureItem, ArmorTickListeningItem {
 
     public EnumSeaSerpent armor_type;
 
     public ItemSeaSerpentArmor(EnumSeaSerpent armorType, CustomArmorMaterial material, ArmorItem.Type slot) {
         super(material, slot, new Item.Properties()/*.tab(IceAndFire.TAB_ITEMS)*/);
         this.armor_type = armorType;
+
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            registerRenderer();
+        }
     }
 
     @Override
@@ -48,14 +59,15 @@ public class ItemSeaSerpentArmor extends ArmorItem {
         return "item.iceandfire.sea_serpent_helmet";
     }
 
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public @NotNull HumanoidModel<?> getHumanoidArmorModel(LivingEntity LivingEntity, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-                return new ModelSeaSerpentArmor(armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD);
-            }
-        });
+    private void registerRenderer() {
+        var outerModel = new ModelSeaSerpentArmor(false);
+        var innerModel = new ModelSeaSerpentArmor(false);
+
+        ArmorRendererRegistry.register((matrices, vertexConsumers, stack, entity, armorSlot, light, contextModel, armorModel) -> {
+            HumanoidModel<?> model = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD ? innerModel : outerModel;
+
+            model.renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(new ResourceLocation(getArmorTexture(stack, entity, armorSlot, "")))), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
+        }, this);
     }
 
     @Override
@@ -65,7 +77,6 @@ public class ItemSeaSerpentArmor extends ArmorItem {
 
     @Override
     public void onArmorTick(ItemStack stack, Level world, Player player) {
-        super.onArmorTick(stack, world, player);
         player.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 50, 0, false, false));
         if (player.isInWaterOrRain()) {
             int headMod = player.getItemBySlot(EquipmentSlot.HEAD).getItem() instanceof ItemSeaSerpentArmor ? 1 : 0;

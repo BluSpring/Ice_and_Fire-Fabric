@@ -46,10 +46,9 @@ import net.minecraft.world.level.*;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 public class EntityTroll extends Monster implements IAnimatedEntity, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
@@ -390,7 +389,7 @@ public class EntityTroll extends Monster implements IAnimatedEntity, IVillagerFe
                 float weaponZ = (float) (getZ() + 1.9F * Mth.sin((float) ((yBodyRot + 90) * Math.PI / 180)));
                 float weaponY = (float) (getY() + (this.getEyeHeight() / 2));
                 Explosion explosion = new Explosion(level(), this, weaponX, weaponY, weaponZ, 1F + this.getRandom().nextFloat(), new ArrayList<>());
-                if (!MinecraftForge.EVENT_BUS.post(new GenericGriefEvent(this, weaponX, weaponY, weaponZ))) {
+                if (!GenericGriefEvent.EVENT.invoker().onGrief(new GenericGriefEvent(this, weaponX, weaponY, weaponZ))) {
                     explosion.explode();
                     explosion.finalizeExplosion(true);
                 }

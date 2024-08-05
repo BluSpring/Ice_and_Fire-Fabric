@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -21,7 +21,7 @@ public class PixieAIFlee<T extends Entity> extends Goal {
     protected T closestLivingEntity;
     private Vec3 hidePlace;
 
-    @Nonnull
+    @NotNull
     private List<T> list = Collections.emptyList();
 
     public PixieAIFlee(EntityPixie pixie, Class<T> classToAvoidIn, float avoidDistanceIn, Predicate<? super T> avoidTargetSelectorIn) {

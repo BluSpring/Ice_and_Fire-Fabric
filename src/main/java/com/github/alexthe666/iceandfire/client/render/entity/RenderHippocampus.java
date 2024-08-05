@@ -16,7 +16,7 @@ import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.item.DyeColor;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 
 public class RenderHippocampus extends MobRenderer<EntityHippocampus, ModelHippocampus> {

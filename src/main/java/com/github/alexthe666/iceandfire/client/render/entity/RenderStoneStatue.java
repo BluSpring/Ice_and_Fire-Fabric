@@ -10,6 +10,7 @@ import com.github.alexthe666.iceandfire.client.render.entity.layer.LayerHydraHea
 import com.github.alexthe666.iceandfire.entity.EntityHydra;
 import com.github.alexthe666.iceandfire.entity.EntityStoneStatue;
 import com.github.alexthe666.iceandfire.entity.EntityTroll;
+import com.github.alexthe666.iceandfire.fabric.extensions.RiderSittingEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -99,7 +100,7 @@ public class RenderStoneStatue extends EntityRenderer<EntityStoneStatue> {
 
         matrixStackIn.pushPose();
         float yaw = entityIn.yRotO + (entityIn.getYRot() - entityIn.yRotO) * partialTicks;
-        boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
+        boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && ((RiderSittingEntity) entityIn.getVehicle()).shouldRiderSit());
         model.young = entityIn.isBaby();
         model.riding = shouldSit;
         model.attackTime = entityIn.getAttackAnim(partialTicks);

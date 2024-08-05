@@ -26,8 +26,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 import static com.github.alexthe666.iceandfire.entity.tile.IafTileEntityRegistry.DRAGONFORGE_INPUT;
 
@@ -44,6 +43,7 @@ public class BlockDragonforgeInput extends BaseEntityBlock implements IDragonPro
                 .dynamicShape()
                 .strength(40, 500)
                 .sound(SoundType.METAL)
+                .pushReaction(PushReaction.BLOCK)
 		);
 
         this.dragonType = dragonType;
@@ -52,12 +52,6 @@ public class BlockDragonforgeInput extends BaseEntityBlock implements IDragonPro
 
     static String name(int dragonType) {
         return "dragonforge_%s_input".formatted(DragonType.getNameFromInt(dragonType));
-    }
-
-
-    @Override
-    public @NotNull PushReaction getPistonPushReaction(@NotNull BlockState state) {
-        return PushReaction.BLOCK;
     }
 
     @Override

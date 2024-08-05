@@ -2,6 +2,10 @@ package com.github.alexthe666.iceandfire.item;
 
 import com.github.alexthe666.iceandfire.client.render.tile.RenderTrollWeapon;
 import com.github.alexthe666.iceandfire.enums.EnumTroll;
+import io.github.fabricators_of_create.porting_lib.common.util.Lazy;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.fabric.api.client.rendering.v1.BuiltinItemRendererRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
@@ -14,11 +18,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.common.util.NonNullLazy;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -29,19 +31,17 @@ public class ItemTrollWeapon extends SwordItem {
     public ItemTrollWeapon(EnumTroll.Weapon weapon) {
         super(IafItemRegistry.TROLL_WEAPON_TOOL_MATERIAL, 15, -3.5F, new Item.Properties()/*.tab(IceAndFire.TAB_ITEMS)*/);
         this.weapon = weapon;
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            registerRenderer();
+        }
     }
 
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
+    private void registerRenderer() {
+        var renderer = Lazy.of(() -> new RenderTrollWeapon(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels()));
 
-        consumer.accept(new IClientItemExtensions() {
-            static final NonNullLazy<BlockEntityWithoutLevelRenderer> renderer = NonNullLazy.of(() -> new RenderTrollWeapon(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels()));
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                return renderer.get();
-            }
-        });
+        BuiltinItemRendererRegistry.INSTANCE.register(this, ((stack, mode, matrices, vertexConsumers, light, overlay) -> {
+            renderer.get().renderByItem(stack, mode, matrices, vertexConsumers, light, overlay);
+        }));
     }
 
     @Override

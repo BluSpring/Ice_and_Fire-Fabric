@@ -14,31 +14,27 @@ import com.github.alexthe666.iceandfire.entity.util.ICustomMoveController;
 import com.github.alexthe666.iceandfire.enums.EnumParticles;
 import com.github.alexthe666.iceandfire.message.MessageDragonControl;
 import com.github.alexthe666.iceandfire.pathfinding.raycoms.WorldEventContext;
+import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.fabricators_of_create.porting_lib.entity.events.EntityMountEvents;
+import io.github.fabricators_of_create.porting_lib.entity.events.LivingEntityEvents;
+import io.github.fabricators_of_create.porting_lib.event.client.CameraSetupCallback;
+import io.github.fabricators_of_create.porting_lib.event.client.LivingEntityRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-@OnlyIn(Dist.CLIENT)
-@Mod.EventBusSubscriber(modid = IceAndFire.MODID, value = Dist.CLIENT)
 public class ClientEvents {
 
     private static final ResourceLocation SIREN_SHADER = new ResourceLocation("iceandfire:shaders/post/siren.json");
@@ -52,14 +48,49 @@ public class ClientEvents {
         return false;
     }
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void renderWorldLastEvent(@NotNull final RenderLevelStageEvent event)
-    {
-        WorldEventContext.INSTANCE.renderWorldLastEvent(event);
+    static {
+        WorldRenderEvents.LAST.register(ClientEvents::renderWorldLastEvent);
     }
 
-    @SubscribeEvent
-    public void onCameraSetup(ViewportEvent.ComputeCameraAngles event) {
+    public static void renderWorldLastEvent(WorldRenderContext context)
+    {
+        WorldEventContext.INSTANCE.renderWorldLastEvent(context);
+    }
+
+    public ClientEvents() {
+        CameraSetupCallback.EVENT.register(info -> {
+            onCameraSetup(info);
+            return false;
+        });
+
+        LivingEntityEvents.LivingTickEvent.TICK.register(event -> {
+            onLivingUpdate(event);
+        });
+
+        LivingEntityRenderEvents.PRE.register((entity, renderer, partialRenderTick, matrixStack, buffers, light) -> {
+           return onPreRenderLiving(entity);
+        });
+
+        LivingEntityRenderEvents.POST.register((entity, renderer, partialRenderTick, matrixStack, buffers, light) -> {
+            onPostRenderLiving(entity, matrixStack, buffers, partialRenderTick, light);
+        });
+
+        ScreenEvents.BEFORE_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
+            onGuiOpened(client, screen);
+        });
+
+        EntityMountEvents.MOUNT.register((vehicle, passenger) -> {
+            onEntityMount(vehicle, passenger, false);
+            return true;
+        });
+
+        EntityMountEvents.DISMOUNT.register((vehicle, passenger) -> {
+            onEntityMount(vehicle, passenger, true);
+            return true;
+        });
+    }
+
+    public void onCameraSetup(CameraSetupCallback.CameraInfo event) {
         Player player = Minecraft.getInstance().player;
         if (player.getVehicle() != null) {
             if (player.getVehicle() instanceof EntityDragonBase) {
@@ -68,19 +99,18 @@ public class ClientEvents {
                 if (Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK ||
                         Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_FRONT) {
                     if (currentView == 1) {
-                        event.getCamera().move(-event.getCamera().getMaxZoom(scale * 1.2F), 0F, 0);
+                        event.camera.move(-event.camera.getMaxZoom(scale * 1.2F), 0F, 0);
                     } else if (currentView == 2) {
-                        event.getCamera().move(-event.getCamera().getMaxZoom(scale * 3F), 0F, 0);
+                        event.camera.move(-event.camera.getMaxZoom(scale * 3F), 0F, 0);
                     } else if (currentView == 3) {
-                        event.getCamera().move(-event.getCamera().getMaxZoom(scale * 5F), 0F, 0);
+                        event.camera.move(-event.camera.getMaxZoom(scale * 5F), 0F, 0);
                     }
                 }
             }
         }
     }
 
-    @SubscribeEvent
-    public void onLivingUpdate(LivingEvent.LivingTickEvent event) {
+    public void onLivingUpdate(LivingEntityEvents.LivingTickEvent event) {
         Minecraft mc = Minecraft.getInstance();
         if (event.getEntity() instanceof ICustomMoveController) {
             Entity entity = event.getEntity();
@@ -154,54 +184,46 @@ public class ClientEvents {
         }
     }
 
-    @SubscribeEvent
-    public void onPreRenderLiving(RenderLivingEvent.Pre event) {
-        if (shouldCancelRender(event.getEntity())) {
-            event.setCanceled(true);
-        }
+    public boolean onPreRenderLiving(LivingEntity entity) {
+        return shouldCancelRender(entity);
     }
 
-    @SubscribeEvent
-    public void onPostRenderLiving(RenderLivingEvent.Post event) {
-        if (shouldCancelRender(event.getEntity())) {
-            event.setCanceled(true);
+    public void onPostRenderLiving(LivingEntity entity, PoseStack poseStack, MultiBufferSource bufferSource, float partialTick, int light) {
+        if (shouldCancelRender(entity)) {
+            return;
         }
-
-        LivingEntity entity = event.getEntity();
 
         EntityDataProvider.getCapability(entity).ifPresent(data -> {
             for (LivingEntity target : data.miscData.getTargetedByScepter()) {
-                CockatriceBeamRender.render(entity, target, event.getPoseStack(), event.getMultiBufferSource(), event.getPartialTick());
+                CockatriceBeamRender.render(entity, target, poseStack, bufferSource, partialTick);
             }
 
             if (data.frozenData.isFrozen) {
-                RenderFrozenState.render(event.getEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), data.frozenData.frozenTicks);
+                RenderFrozenState.render(entity, poseStack, bufferSource, light, data.frozenData.frozenTicks);
             }
 
-            RenderChain.render(entity, event.getPartialTick(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight(), data.chainData.getChainedTo());
+            RenderChain.render(entity, partialTick, poseStack, bufferSource, light, data.chainData.getChainedTo());
         });
     }
 
-    @SubscribeEvent
-    public void onGuiOpened(ScreenEvent.Opening event) {
-        if (IafConfig.customMainMenu && event.getScreen() instanceof TitleScreen && !(event.getScreen() instanceof IceAndFireMainMenu)) {
-            event.setNewScreen(new IceAndFireMainMenu());
+    public void onGuiOpened(Minecraft mc, Screen screen) {
+        if (IafConfig.customMainMenu && screen instanceof TitleScreen && !(screen instanceof IceAndFireMainMenu)) {
+            mc.setScreen(new IceAndFireMainMenu());
         }
     }
 
     // TODO: add this to client side config
     public final boolean AUTO_ADAPT_3RD_PERSON = true;
 
-    @SubscribeEvent
-    public void onEntityMount(EntityMountEvent event) {
-        if (event.getEntityBeingMounted() instanceof EntityDragonBase dragon && event.getLevel().isClientSide && event.getEntityMounting() == Minecraft.getInstance().player) {
+    public void onEntityMount(Entity vehicle, Entity passenger, boolean isDismount) {
+        if (vehicle instanceof EntityDragonBase dragon && vehicle.level().isClientSide && passenger == Minecraft.getInstance().player) {
             if (dragon.isTame() && dragon.isOwnedBy(Minecraft.getInstance().player)) {
                 if (AUTO_ADAPT_3RD_PERSON) {
                     // Auto adjust 3rd person camera's according to dragon's size
                     IceAndFire.PROXY.setDragon3rdPersonView(2);
                 }
                 if (IafConfig.dragonAuto3rdPerson) {
-                    if (event.isDismounting()) {
+                    if (isDismount) {
                         Minecraft.getInstance().options.setCameraType(CameraType.values()[IceAndFire.PROXY.getPreviousViewType()]);
                     } else {
                         IceAndFire.PROXY.setPreviousViewType(Minecraft.getInstance().options.getCameraType().ordinal());

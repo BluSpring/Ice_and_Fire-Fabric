@@ -8,6 +8,7 @@ import com.github.alexthe666.iceandfire.entity.EntityDragonEgg;
 import com.github.alexthe666.iceandfire.entity.tile.TileEntityEggInIce;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.Blocks;
 
 public class ModelDragonEgg<T extends LivingEntity> extends AdvancedEntityModel<T> {
 
@@ -55,7 +56,8 @@ public class ModelDragonEgg<T extends LivingEntity> extends AdvancedEntityModel<
         if (entity instanceof EntityDragonEgg egg) {
             boolean isLocationValid = false;
             if (egg.getEggType().dragonType == DragonType.FIRE) {
-                isLocationValid = egg.level().getBlockState(egg.blockPosition()).isBurning(entity.level(), egg.blockPosition());
+                var block = egg.level().getBlockState(egg.blockPosition()).getBlock();
+                isLocationValid = block == Blocks.FIRE || block == Blocks.LAVA;
             } else if (egg.getEggType().dragonType == DragonType.LIGHTNING) {
                 isLocationValid = egg.level().isRainingAt(egg.blockPosition());
             }

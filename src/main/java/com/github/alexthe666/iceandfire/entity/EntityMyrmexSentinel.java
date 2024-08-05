@@ -5,6 +5,7 @@ import com.github.alexthe666.iceandfire.IafConfig;
 import com.github.alexthe666.iceandfire.entity.ai.*;
 import com.github.alexthe666.iceandfire.entity.util.DragonUtils;
 import com.github.alexthe666.iceandfire.entity.util.MyrmexTrades;
+import com.github.alexthe666.iceandfire.fabric.extensions.RiderSittingEntity;
 import com.google.common.base.Predicate;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -31,10 +32,9 @@ import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-public class EntityMyrmexSentinel extends EntityMyrmexBase {
+public class EntityMyrmexSentinel extends EntityMyrmexBase implements RiderSittingEntity {
 
     public static final Animation ANIMATION_GRAB = Animation.create(15);
     public static final Animation ANIMATION_NIBBLE = Animation.create(10);

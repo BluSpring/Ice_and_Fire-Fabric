@@ -8,8 +8,8 @@ import com.github.alexthe666.iceandfire.world.MyrmexWorldData;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -21,7 +21,7 @@ public class MyrmexAIFindMate<T extends EntityMyrmexBase> extends TargetGoal {
     public EntityMyrmexRoyal myrmex;
     protected EntityMyrmexBase targetEntity;
 
-    @Nonnull
+    @NotNull
     private List<Entity> list = IAFMath.emptyEntityList;
 
     public MyrmexAIFindMate(EntityMyrmexRoyal myrmex) {

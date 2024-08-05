@@ -8,7 +8,7 @@ import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -20,7 +20,7 @@ public class MyrmexAIForageForItems<T extends ItemEntity> extends TargetGoal {
     public EntityMyrmexWorker myrmex;
     protected ItemEntity targetEntity;
 
-    @Nonnull
+    @NotNull
     private List<ItemEntity> list = IAFMath.emptyItemEntityList;
 
     public MyrmexAIForageForItems(EntityMyrmexWorker myrmex) {

@@ -1,6 +1,7 @@
 package com.github.alexthe666.iceandfire.entity.util;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.fabricators_of_create.porting_lib.blocks.extensions.OnExplodedBlock;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -94,7 +95,7 @@ public class BlockLaunchExplosion extends Explosion {
                     this.world.getProfiler().push("explosion_blocks");
 
                     Vec3 Vector3d = new Vec3(this.x, this.y, this.z);
-                    blockstate.onBlockExploded(this.world, blockpos, this);
+                    ((OnExplodedBlock) blockstate.getBlock()).onBlockExploded(blockstate, this.world, blockpos, this);
                     FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(EntityType.FALLING_BLOCK, world);
                     fallingBlockEntity.setStartPos(blockpos1);
                     fallingBlockEntity.setPos(blockpos1.getX() + 0.5D, blockpos1.getY() + 0.5D, blockpos1.getZ() + 0.5D);

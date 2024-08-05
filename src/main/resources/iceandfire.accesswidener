@@ -1,0 +1,58 @@
+accessWidener v2 named
+
+accessible field net/minecraft/world/entity/projectile/ThrownTrident ID_LOYALTY Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible field net/minecraft/world/entity/projectile/ThrownTrident tridentItem Lnet/minecraft/world/item/ItemStack;
+accessible field net/minecraft/world/entity/projectile/ThrownTrident ID_FOIL Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible field net/minecraft/world/entity/projectile/ThrownTrident dealtDamage Z
+accessible method net/minecraft/client/Camera movePosition (DDD)V
+accessible method net/minecraft/world/damagesource/CombatTracker getBestCombatEntry ()Lnet/minecraft/world/damagesource/CombatEntry;
+accessible method net/minecraft/world/entity/Entity getAllowedMovement (Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;
+accessible method net/minecraft/client/Camera calcCameraDistance (D)D
+
+accessible field net/minecraft/world/entity/LivingEntity attributes Lnet/minecraft/world/entity/ai/attributes/AttributeMap;
+accessible field net/minecraft/world/level/chunk/ChunkGenerator biomeSource Lnet/minecraft/world/level/biome/BiomeSource;
+mutable field net/minecraft/world/entity/LivingEntity attributes Lnet/minecraft/world/entity/ai/attributes/AttributeMap;
+mutable field net/minecraft/world/level/chunk/ChunkGenerator runtimeBiomeSource Lnet/minecraft/world/level/biome/BiomeSource;
+
+accessible class net/minecraft/world/level/biome/MultiNoiseBiomeSource$PresetInstance
+
+accessible field net/minecraft/world/level/biome/BiomeSource possibleBiomes Ljava/util/function/Supplier;
+mutable field net/minecraft/world/level/biome/BiomeSource possibleBiomes Ljava/util/function/Supplier;
+
+accessible method net/minecraft/client/renderer/Sheets createBannerMaterial (Lnet/minecraft/world/level/block/entity/BannerPattern;)Lnet/minecraft/client/resources/model/Material;
+extendable method net/minecraft/client/renderer/Sheets createBannerMaterial (Lnet/minecraft/world/level/block/entity/BannerPattern;)Lnet/minecraft/client/resources/model/Material;
+#accessible method net/minecraft/client/renderer/Sheets m_173389_(Lnet/minecraft/world/level/block/entity/BannerPattern;)Lnet/minecraft/client/resources/model/Material;
+accessible method net/minecraft/server/level/ChunkMap getVisibleChunkIfPresent (J)Lnet/minecraft/server/level/ChunkHolder;
+extendable method net/minecraft/server/level/ChunkMap getVisibleChunkIfPresent (J)Lnet/minecraft/server/level/ChunkHolder;
+
+accessible field net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool templates Lit/unimi/dsi/fastutil/objects/ObjectArrayList;
+accessible field net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool rawTemplates Ljava/util/List;
+mutable field net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool templates Lit/unimi/dsi/fastutil/objects/ObjectArrayList;
+mutable field net/minecraft/world/level/levelgen/structure/pools/StructureTemplatePool rawTemplates Ljava/util/List;
+accessible field net/minecraft/data/worldgen/ProcessorLists EMPTY Lnet/minecraft/resources/ResourceKey;
+mutable field net/minecraft/data/worldgen/ProcessorLists EMPTY Lnet/minecraft/resources/ResourceKey;
+
+accessible field net/minecraft/data/recipes/ShapelessRecipeBuilder result Lnet/minecraft/world/item/Item;
+accessible field net/minecraft/data/recipes/ShapelessRecipeBuilder count I
+accessible field net/minecraft/data/recipes/ShapelessRecipeBuilder ingredients Ljava/util/List;
+accessible field net/minecraft/data/recipes/ShapelessRecipeBuilder advancement Lnet/minecraft/advancements/Advancement/Builder;
+accessible field net/minecraft/data/recipes/ShapelessRecipeBuilder group Ljava/lang/String;
+
+accessible field net/minecraft/data/recipes/ShapedRecipeBuilder result Lnet/minecraft/world/item/Item;
+accessible field net/minecraft/data/recipes/ShapedRecipeBuilder count I
+accessible field net/minecraft/data/recipes/ShapedRecipeBuilder rows Ljava/util/List;
+accessible field net/minecraft/data/recipes/ShapedRecipeBuilder key Ljava/util/Map;
+accessible field net/minecraft/data/recipes/ShapedRecipeBuilder advancement Lnet/minecraft/advancements/Advancement/Builder;
+accessible field net/minecraft/data/recipes/ShapedRecipeBuilder group Ljava/lang/String;
+
+accessible method net/minecraft/client/Camera move (DDD)V
+accessible method net/minecraft/client/Camera getMaxZoom (D)D
+accessible method net/minecraft/client/renderer/GameRenderer loadEffect (Lnet/minecraft/resources/ResourceLocation;)V
+
+accessible field net/minecraft/world/entity/Mob goalSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
+accessible field net/minecraft/world/entity/Mob targetSelector Lnet/minecraft/world/entity/ai/goal/GoalSelector;
+
+accessible method net/minecraft/world/damagesource/CombatTracker getMostSignificantFall ()Lnet/minecraft/world/damagesource/CombatEntry;
+accessible field net/minecraft/client/renderer/entity/EntityRenderDispatcher renderers Ljava/util/Map;
+
+mutable field net/minecraft/client/renderer/RenderStateShard setupState Ljava/lang/Runnable;

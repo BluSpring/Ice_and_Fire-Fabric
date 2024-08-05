@@ -1,7 +1,6 @@
 package com.github.alexthe666.iceandfire.client;
 
 import com.github.alexthe666.iceandfire.CommonProxy;
-import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.client.gui.GuiMyrmexAddRoom;
 import com.github.alexthe666.iceandfire.client.gui.GuiMyrmexStaff;
 import com.github.alexthe666.iceandfire.client.gui.bestiary.GuiBestiary;
@@ -13,6 +12,8 @@ import com.github.alexthe666.iceandfire.enums.EnumParticles;
 import com.github.alexthe666.iceandfire.event.ClientEvents;
 import com.github.alexthe666.iceandfire.event.PlayerRenderEvents;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
@@ -21,16 +22,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = IceAndFire.MODID, value = Dist.CLIENT)
 public class ClientProxy extends CommonProxy {
 
     public static Set<UUID> currentDragonRiders = new HashSet<UUID>();
@@ -52,8 +48,8 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void init() {
         IafKeybindRegistry.init();
-        MinecraftForge.EVENT_BUS.register(new PlayerRenderEvents());
-        MinecraftForge.EVENT_BUS.register(new ClientEvents());
+        new PlayerRenderEvents();
+        new ClientEvents();
     }
 
     @Override
@@ -67,7 +63,7 @@ public class ClientProxy extends CommonProxy {
         IafClientSetup.clientInit();
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void spawnDragonParticle(final EnumParticles name, double x, double y, double z, double motX, double motY, double motZ, EntityDragonBase entityDragonBase) {
         ClientLevel world = Minecraft.getInstance().level;
@@ -85,7 +81,7 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void spawnParticle(final EnumParticles name, double x, double y, double z, double motX, double motY, double motZ, float size) {
         ClientLevel world = Minecraft.getInstance().level;
@@ -135,25 +131,25 @@ public class ClientProxy extends CommonProxy {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void openBestiaryGui(ItemStack book) {
         Minecraft.getInstance().setScreen(new GuiBestiary(book));
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void openMyrmexStaffGui(ItemStack staff) {
         Minecraft.getInstance().setScreen(new GuiMyrmexStaff(staff));
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public void openMyrmexAddRoomGui(ItemStack staff, BlockPos pos, Direction facing) {
         Minecraft.getInstance().setScreen(new GuiMyrmexAddRoom(staff, pos, facing));
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Object getFontRenderer() {
         return Minecraft.getInstance().font;
@@ -184,7 +180,7 @@ public class ClientProxy extends CommonProxy {
         LayerDragonArmor.clearCache(clear);
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public boolean shouldSeeBestiaryContents() {
         return InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 340) || InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), 344);
@@ -210,7 +206,7 @@ public class ClientProxy extends CommonProxy {
         referencedTE = tileEntity;
     }
 
-    @OnlyIn(Dist.CLIENT)
+    @Environment(EnvType.CLIENT)
     @Override
     public Player getClientSidePlayer() {
         return Minecraft.getInstance().player;

@@ -1,0 +1,35 @@
+{
+    "schemaVersion": 1,
+    "id": "iceandfire",
+    "version": "${version}",
+    "name": "Ice and Fire (Fabric)",
+    "description": "Dragons and other mythological creatures in minecraft.\nUnofficial Fabric 1.20.1 port by BluSpring.",
+    "authors": [
+        "Alexthe666",
+        "TheBv",
+        "BluSpring"
+    ],
+    "contact": {
+        "sources": "https://github.com/BluSpring/Ice_And_Fire-Fabric"
+    },
+    "license": "LGPLv3",
+    "icon": "iceandfire.png",
+    "environment": "*",
+    "depends": {
+        "fabricloader": ">=${loader_version}",
+        "fabric": "*",
+        "minecraft": "${minecraft_version}",
+        "architectury": ">=${architectury_version}",
+        "citadel": "*",
+        "forgeconfigapiport": ">=${forge_config_version}"
+    },
+    "accessWidener": "iceandfire.accesswidener",
+    "entrypoints": {
+        "main": [
+            "com.github.alexthe666.iceandfire.IceAndFire"
+        ]
+    },
+    "mixins": [
+        "iceandfire.mixins.json"
+    ]
+}

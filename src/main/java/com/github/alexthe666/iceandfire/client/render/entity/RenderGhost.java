@@ -3,9 +3,11 @@ package com.github.alexthe666.iceandfire.client.render.entity;
 import com.github.alexthe666.iceandfire.client.model.ModelGhost;
 import com.github.alexthe666.iceandfire.client.render.IafRenderType;
 import com.github.alexthe666.iceandfire.entity.EntityGhost;
+import com.github.alexthe666.iceandfire.fabric.extensions.RiderSittingEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import io.github.fabricators_of_create.porting_lib.event.client.LivingEntityRenderEvents;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -48,12 +50,12 @@ public class RenderGhost extends MobRenderer<EntityGhost, ModelGhost> {
     @Override
     public void render(@NotNull EntityGhost entityIn, float entityYaw, float partialTicks, @NotNull PoseStack matrixStackIn, @NotNull MultiBufferSource bufferIn, int packedLightIn) {
         shadowRadius = 0;
-        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Pre<EntityGhost, ModelGhost>(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn)))
+        if (LivingEntityRenderEvents.PRE.invoker().beforeRender(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn))
             return;
         matrixStackIn.pushPose();
         this.model.attackTime = this.getAttackAnim(entityIn, partialTicks);
 
-        boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && entityIn.getVehicle().shouldRiderSit());
+        boolean shouldSit = entityIn.isPassenger() && (entityIn.getVehicle() != null && ((RiderSittingEntity) entityIn.getVehicle()).shouldRiderSit());
         this.model.riding = shouldSit;
         this.model.young = entityIn.isBaby();
         float f = Mth.rotLerp(partialTicks, entityIn.yBodyRotO, entityIn.yBodyRot);
@@ -157,12 +159,10 @@ public class RenderGhost extends MobRenderer<EntityGhost, ModelGhost> {
         }
 
         matrixStackIn.popPose();
-        net.minecraftforge.client.event.RenderNameTagEvent renderNameplateEvent = new net.minecraftforge.client.event.RenderNameTagEvent(entityIn, entityIn.getDisplayName(), this, matrixStackIn, bufferIn, packedLightIn, partialTicks);
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(renderNameplateEvent);
-        if (renderNameplateEvent.getResult() != net.minecraftforge.eventbus.api.Event.Result.DENY && (renderNameplateEvent.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW || this.shouldShowName(entityIn))) {
-            this.renderNameTag(entityIn, renderNameplateEvent.getContent(), matrixStackIn, bufferIn, packedLightIn);
+        if (this.shouldShowName(entityIn)) {
+            this.renderNameTag(entityIn, entityIn.getDisplayName(), matrixStackIn, bufferIn, packedLightIn);
         }
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.client.event.RenderLivingEvent.Post<EntityGhost, ModelGhost>(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn));
+        LivingEntityRenderEvents.POST.invoker().afterRender(entityIn, this, partialTicks, matrixStackIn, bufferIn, packedLightIn);
     }
 
     @Override

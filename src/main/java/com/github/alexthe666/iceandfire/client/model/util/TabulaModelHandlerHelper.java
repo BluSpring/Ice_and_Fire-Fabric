@@ -19,7 +19,7 @@ public class TabulaModelHandlerHelper {
             path = path + ".tbl";
         }
 
-        InputStream stream = TabulaModelHandler.INSTANCE.getClass().getClassLoader().getResourceAsStream(path);
+        InputStream stream = TabulaModelHandlerHelper.class.getResourceAsStream(path);
         return TabulaModelHandler.INSTANCE.loadTabulaModel(getModelJsonStream(path, stream));
     }
 

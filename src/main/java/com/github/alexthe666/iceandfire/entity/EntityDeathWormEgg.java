@@ -1,6 +1,8 @@
 package com.github.alexthe666.iceandfire.entity;
 
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
+import io.github.fabricators_of_create.porting_lib.entity.IEntityAdditionalSpawnData;
+import io.github.fabricators_of_create.porting_lib.entity.PortingLibEntity;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -15,8 +17,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityDeathWormEgg extends ThrowableItemProjectile implements IEntityAdditionalSpawnData {
@@ -41,7 +41,7 @@ public class EntityDeathWormEgg extends ThrowableItemProjectile implements IEnti
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PortingLibEntity.getEntitySpawningPacket(this);
     }
 
     @Override

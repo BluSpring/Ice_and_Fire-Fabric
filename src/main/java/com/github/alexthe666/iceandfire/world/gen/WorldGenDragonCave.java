@@ -11,6 +11,8 @@ import com.github.alexthe666.iceandfire.world.IafWorldRegistry;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -30,8 +32,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.tags.ITagManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,12 +121,10 @@ public abstract class WorldGenDragonCave extends Feature<NoneFeatureConfiguratio
     }
 
     public void createShell(LevelAccessor worldIn, RandomSource rand, Set<BlockPos> positions) {
-        ITagManager<Block> tagManager = ForgeRegistries.BLOCKS.tags();
-
-        List<Block> rareOres = getBlockList(tagManager, IafBlockTags.DRAGON_CAVE_RARE_ORES);
-        List<Block> uncommonOres = getBlockList(tagManager, IafBlockTags.DRAGON_CAVE_UNCOMMON_ORES);
-        List<Block> commonOres = getBlockList(tagManager, IafBlockTags.DRAGON_CAVE_COMMON_ORES);
-        List<Block> dragonTypeOres = getBlockList(tagManager, dragonTypeOreTag);
+        List<Block> rareOres = getBlockList(IafBlockTags.DRAGON_CAVE_RARE_ORES);
+        List<Block> uncommonOres = getBlockList(IafBlockTags.DRAGON_CAVE_UNCOMMON_ORES);
+        List<Block> commonOres = getBlockList(IafBlockTags.DRAGON_CAVE_COMMON_ORES);
+        List<Block> dragonTypeOres = getBlockList(dragonTypeOreTag);
 
         positions.forEach(blockPos -> {
             if (!(worldIn.getBlockState(blockPos).getBlock() instanceof BaseEntityBlock) && worldIn.getBlockState(blockPos).getDestroySpeed(worldIn, blockPos) >= 0) {
@@ -161,12 +159,12 @@ public abstract class WorldGenDragonCave extends Feature<NoneFeatureConfiguratio
         });
     }
 
-    private List<Block> getBlockList(final ITagManager<Block> tagManager, final TagKey<Block> tagKey) {
-        if (tagManager == null) {
+    private List<Block> getBlockList(final TagKey<Block> tagKey) {
+        var tags = BuiltInRegistries.BLOCK.getTag(tagKey);
+        if (tags.isEmpty())
             return List.of();
-        }
 
-        return tagManager.getTag(tagKey).stream().toList();
+        return tags.orElseThrow().stream().map(Holder::value).toList();
     }
 
     public void hollowOut(LevelAccessor worldIn, Set<BlockPos> positions) {

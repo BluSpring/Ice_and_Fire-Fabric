@@ -7,6 +7,7 @@ import com.github.alexthe666.iceandfire.entity.IafEntityRegistry;
 import com.github.alexthe666.iceandfire.enums.EnumParticles;
 import com.github.alexthe666.iceandfire.message.MessageUpdatePixieHouse;
 import com.github.alexthe666.iceandfire.message.MessageUpdatePixieHouseModel;
+import io.github.fabricators_of_create.porting_lib.block.CustomDataPacketHandlingBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +26,7 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class TileEntityPixieHouse extends BlockEntity {
+public class TileEntityPixieHouse extends BlockEntity implements CustomDataPacketHandlingBlockEntity {
 
     private static final float PARTICLE_WIDTH = 0.3F;
     private static final float PARTICLE_HEIGHT = 0.6F;

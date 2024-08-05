@@ -1,21 +1,28 @@
 package com.github.alexthe666.iceandfire.message;
 
+import com.github.alexthe666.citadel.server.message.CitadelPacket;
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.entity.tile.TileEntityLectern;
 import com.github.alexthe666.iceandfire.enums.EnumBestiaryPages;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
+import me.pepperbell.simplenetworking.SimpleChannel;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class MessageUpdateLectern {
+public class MessageUpdateLectern implements CitadelPacket {
 
     public long blockPos;
     public int selectedPages1;
@@ -37,6 +44,22 @@ public class MessageUpdateLectern {
     public MessageUpdateLectern() {
     }
 
+    @Override
+    public void handle(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl listener, PacketSender responseSender, SimpleChannel channel) {
+        Handler.handle(this, player, server);
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    public void handle(Minecraft client, ClientPacketListener listener, PacketSender responseSender, SimpleChannel channel) {
+        Handler.handle(this, client.player, client);
+    }
+
+    @Override
+    public void encode(FriendlyByteBuf buf) {
+        write(this, buf);
+    }
+
     public static MessageUpdateLectern read(FriendlyByteBuf buf) {
         return new MessageUpdateLectern(buf.readLong(), buf.readInt(), buf.readInt(), buf.readInt(), buf.readBoolean(), buf.readInt());
     }
@@ -54,26 +77,14 @@ public class MessageUpdateLectern {
         public Handler() {
         }
 
-        public static void handle(MessageUpdateLectern message, Supplier<NetworkEvent.Context> ctx) {
-            ctx.get().enqueueWork(() ->
-                    DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> () -> MessageUpdateLectern.Handler.handlePacket(message, ctx))
-            );
-            ctx.get().enqueueWork(() ->
-                    DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MessageUpdateLectern.Handler.handlePacket(message, ctx))
-            );
-            ctx.get().setPacketHandled(true);
+        public static void handle(MessageUpdateLectern message, Player player, BlockableEventLoop<?> loop) {
+            loop.execute(() -> {
+                MessageUpdateLectern.Handler.handlePacket(message, player, loop);
+            });
         }
 
-        public static void handlePacket(final MessageUpdateLectern message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            NetworkEvent.Context context = contextSupplier.get();
-
-            context.enqueueWork(() -> {
-                Player player = context.getSender();
-
-                if (context.getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-                    player = IceAndFire.PROXY.getClientSidePlayer();
-                }
-
+        public static void handlePacket(final MessageUpdateLectern message, Player player, BlockableEventLoop<?> loop) {
+            loop.execute(() -> {
                 if (player != null) {
                     BlockPos pos = BlockPos.of(message.blockPos);
                     if (player.level().hasChunkAt(pos) && player.level().getBlockEntity(pos) instanceof TileEntityLectern lectern) {
@@ -93,8 +104,6 @@ public class MessageUpdateLectern {
                     }
                 }
             });
-
-            context.setPacketHandled(true);
         }
     }
 

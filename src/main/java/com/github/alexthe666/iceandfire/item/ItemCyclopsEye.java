@@ -1,5 +1,6 @@
 package com.github.alexthe666.iceandfire.item;
 
+import io.github.fabricators_of_create.porting_lib.item.ReequipAnimationItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -16,10 +17,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
-public class ItemCyclopsEye extends Item {
+public class ItemCyclopsEye extends Item implements ReequipAnimationItem {
 
     public ItemCyclopsEye() {
         super(new Item.Properties()/*.tab(IceAndFire.TAB_ITEMS)*/.durability(500));

@@ -5,10 +5,16 @@ import com.github.alexthe666.iceandfire.block.BlockDragonforgeBricks;
 import com.github.alexthe666.iceandfire.block.BlockDragonforgeCore;
 import com.github.alexthe666.iceandfire.block.IafBlockRegistry;
 import com.github.alexthe666.iceandfire.entity.DragonType;
+import com.github.alexthe666.iceandfire.fabric.transfer.SidedInvWrapper;
 import com.github.alexthe666.iceandfire.inventory.ContainerDragonForge;
 import com.github.alexthe666.iceandfire.message.MessageUpdateDragonforge;
 import com.github.alexthe666.iceandfire.recipe.DragonForgeRecipe;
 import com.github.alexthe666.iceandfire.recipe.IafRecipeRegistry;
+import io.github.fabricators_of_create.porting_lib.block.CustomDataPacketHandlingBlockEntity;
+import io.github.fabricators_of_create.porting_lib.transfer.item.ItemStackHandlerContainer;
+import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -30,16 +36,13 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-public class TileEntityDragonforge extends BaseContainerBlockEntity implements WorldlyContainer {
+public class TileEntityDragonforge extends BaseContainerBlockEntity implements WorldlyContainer, CustomDataPacketHandlingBlockEntity {
 
     private static final int[] SLOTS_TOP = new int[]{0, 1};
     private static final int[] SLOTS_BOTTOM = new int[]{2};
@@ -50,11 +53,25 @@ public class TileEntityDragonforge extends BaseContainerBlockEntity implements W
     public int fireType;
     public int cookTime;
     public int lastDragonFlameTimer = 0;
-    net.minecraftforge.common.util.LazyOptional<? extends IItemHandler>[] handlers = SidedInvWrapper
+    LazyOptional<? extends SlottedStackStorage>[] handlers = SidedInvWrapper
         .create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
     private NonNullList<ItemStack> forgeItemStacks = NonNullList.withSize(3, ItemStack.EMPTY);
     private boolean prevAssembled;
     private boolean canAddFlameAgain = true;
+
+    static {
+        ItemStorage.SIDED.registerForBlockEntity(((blockEntity, direction) -> {
+            if (direction == null || blockEntity.remove)
+                return null;
+
+            if (direction == Direction.UP)
+                return blockEntity.handlers[0].orElse(null);
+            else if (direction == Direction.DOWN)
+                return blockEntity.handlers[1].orElse(null);
+            else
+                return blockEntity.handlers[2].orElse(null);
+        }), IafTileEntityRegistry.DRAGONFORGE_CORE.get());
+    }
 
     public TileEntityDragonforge(BlockPos pos, BlockState state) {
         super(IafTileEntityRegistry.DRAGONFORGE_CORE.get(), pos, state);
@@ -352,21 +369,6 @@ public class TileEntityDragonforge extends BaseContainerBlockEntity implements W
     @Override
     public void clearContent() {
         this.forgeItemStacks.clear();
-    }
-
-    @Override
-    public <T> net.minecraftforge.common.util.@NotNull LazyOptional<T> getCapability(
-        net.minecraftforge.common.capabilities.@NotNull Capability<T> capability, @Nullable Direction facing) {
-        if (!this.remove && facing != null
-            && capability == ForgeCapabilities.ITEM_HANDLER) {
-            if (facing == Direction.UP)
-                return handlers[0].cast();
-            if (facing == Direction.DOWN)
-                return handlers[1].cast();
-            else
-                return handlers[2].cast();
-        }
-        return super.getCapability(capability, facing);
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.github.alexthe666.iceandfire.entity;
 
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.enums.EnumParticles;
+import io.github.fabricators_of_create.porting_lib.entity.PortingLibEntity;
+import io.github.fabricators_of_create.porting_lib.tool.ToolActions;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.sounds.SoundEvent;
@@ -17,9 +19,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -49,10 +48,6 @@ public class EntityDreadLichSkull extends AbstractArrow {
                                 double dmg) {
         super(type, shooter, worldIn);
         this.setBaseDamage(dmg);
-    }
-
-    public EntityDreadLichSkull(PlayMessages.SpawnEntity spawnEntity, Level worldIn) {
-        this(IafEntityRegistry.DREAD_LICH_SKULL.get(), worldIn);
     }
 
     @Override
@@ -162,7 +157,7 @@ public class EntityDreadLichSkull extends AbstractArrow {
     }
 
     protected void damageShield(Player player, float damage) {
-        if (damage >= 3.0F && player.getUseItem().getItem().canPerformAction(player.getUseItem(), ToolActions.SHIELD_BLOCK)) {
+        if (damage >= 3.0F && player.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK)) {
             ItemStack copyBeforeUse = player.getUseItem().copy();
             int i = 1 + Mth.floor(damage);
             player.getUseItem().hurtAndBreak(i, player, (playerSheild) -> {
@@ -171,7 +166,7 @@ public class EntityDreadLichSkull extends AbstractArrow {
 
             if (player.getUseItem().isEmpty()) {
                 InteractionHand Hand = player.getUsedItemHand();
-                net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, copyBeforeUse, Hand);
+                //net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, copyBeforeUse, Hand);
 
                 if (Hand == net.minecraft.world.InteractionHand.MAIN_HAND) {
                     this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
@@ -205,7 +200,7 @@ public class EntityDreadLichSkull extends AbstractArrow {
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PortingLibEntity.getEntitySpawningPacket(this);
     }
 
 }

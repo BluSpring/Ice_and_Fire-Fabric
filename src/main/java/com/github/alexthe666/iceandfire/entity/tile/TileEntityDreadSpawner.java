@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.entity.SpawnerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class TileEntityDreadSpawner extends SpawnerBlockEntity {
     private final BlockEntityType<?> type;
@@ -31,12 +31,6 @@ public class TileEntityDreadSpawner extends SpawnerBlockEntity {
                 p_155771_.sendBlockUpdated(p_155772_, blockstate, blockstate, 4);
             }
 
-        }
-
-        @Override
-        @javax.annotation.Nullable
-        public net.minecraft.world.level.block.entity.BlockEntity getSpawnerBlockEntity() {
-            return TileEntityDreadSpawner.this;
         }
     };
 

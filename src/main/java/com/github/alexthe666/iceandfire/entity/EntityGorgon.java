@@ -13,6 +13,7 @@ import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.github.alexthe666.iceandfire.misc.IafDamageRegistry;
 import com.github.alexthe666.iceandfire.misc.IafSoundRegistry;
 import com.google.common.base.Predicate;
+import io.github.fabricators_of_create.porting_lib.entity.events.LivingEntityEvents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
@@ -33,8 +34,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityGorgon extends Monster implements IAnimatedEntity, IVillagerFear, IAnimalFear, IHumanoid, IHasCustomizableAttributes {
 
@@ -190,7 +190,7 @@ public class EntityGorgon extends Monster implements IAnimatedEntity, IVillagerF
         if (this.deathTime >= 200) {
             if (!this.level().isClientSide && (this.isAlwaysExperienceDropper() || this.lastHurtByPlayerTime > 0 && this.shouldDropExperience() && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS))) {
                 int i = this.getExperienceReward();
-                i = net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(this, this.lastHurtByPlayer, i);
+                i = LivingEntityEvents.EXPERIENCE_DROP.invoker().onLivingEntityExperienceDrop(i, this.lastHurtByPlayer, this);
                 while (i > 0) {
                     int j = ExperienceOrb.getExperienceValue(i);
                     i -= j;

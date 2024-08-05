@@ -9,6 +9,7 @@ import com.github.alexthe666.iceandfire.entity.ai.CyclopsAIAttackMelee;
 import com.github.alexthe666.iceandfire.entity.ai.CyclopsAITargetSheepPlayers;
 import com.github.alexthe666.iceandfire.entity.util.*;
 import com.github.alexthe666.iceandfire.event.ServerEvents;
+import com.github.alexthe666.iceandfire.fabric.extensions.RiderSittingEntity;
 import com.github.alexthe666.iceandfire.misc.IafSoundRegistry;
 import com.github.alexthe666.iceandfire.misc.IafTagRegistry;
 import com.github.alexthe666.iceandfire.pathfinding.PathNavigateCyclops;
@@ -16,12 +17,14 @@ import com.google.common.base.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.DifficultyInstance;
@@ -48,13 +51,10 @@ import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
-
-public class EntityCyclops extends Monster implements IAnimatedEntity, IBlacklistedFromStatues, IVillagerFear, IHumanoid, IHasCustomizableAttributes {
+public class EntityCyclops extends Monster implements IAnimatedEntity, IBlacklistedFromStatues, IVillagerFear, IHumanoid, IHasCustomizableAttributes, RiderSittingEntity {
 
     private static final EntityDataAccessor<Boolean> BLINDED = SynchedEntityData.defineId(EntityCyclops.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(EntityCyclops.class, EntityDataSerializers.INT);
@@ -168,7 +168,7 @@ public class EntityCyclops extends Monster implements IAnimatedEntity, IBlacklis
             if (!entityIn.hasPassenger(this)
                 && entityIn.getBbWidth() < 1.95F
                 && !(entityIn instanceof EntityDragonBase)
-                && !entityIn.getType().is((ForgeRegistries.ENTITY_TYPES.tags().createTagKey(IafTagRegistry.CYCLOPS_UNLIFTABLES)))) {
+                && !entityIn.getType().is((TagKey.create(Registries.ENTITY_TYPE, IafTagRegistry.CYCLOPS_UNLIFTABLES)))) {
                 this.setAnimation(ANIMATION_EATPLAYER);
                 entityIn.stopRiding();
                 entityIn.startRiding(this, true);
@@ -346,7 +346,7 @@ public class EntityCyclops extends Monster implements IAnimatedEntity, IBlacklis
                         Block block = state.getBlock();
                         if (!state.isAir() && !state.getShape(level(), pos).isEmpty() && !(block instanceof BushBlock) && block != Blocks.BEDROCK && (state.getBlock() instanceof LeavesBlock || state.is(BlockTags.LOGS))) {
                             this.getDeltaMovement().scale(0.6D);
-                            if (MinecraftForge.EVENT_BUS.post(new GenericGriefEvent(this, a, b, c))) continue;
+                            if (GenericGriefEvent.EVENT.invoker().onGrief(new GenericGriefEvent(this, a, b, c))) continue;
                             if (block != Blocks.AIR) {
                                 if (!level().isClientSide) {
                                     level().destroyBlock(pos, true);

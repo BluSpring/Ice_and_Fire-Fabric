@@ -29,8 +29,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -138,7 +138,8 @@ public class EntityDragonEgg extends LivingEntity implements IBlacklistedFromSta
         DragonType dragonType = getEggType().dragonType;
 
         if (dragonType == DragonType.FIRE) {
-            if (level().getBlockState(blockPosition()).isBurning(level(), blockPosition())) {
+            var block = level().getBlockState(blockPosition()).getBlock();
+            if (block == Blocks.FIRE || block == Blocks.LAVA) {
                 setDragonAge(getDragonAge() + 1);
             }
         } else if (dragonType == DragonType.ICE) {

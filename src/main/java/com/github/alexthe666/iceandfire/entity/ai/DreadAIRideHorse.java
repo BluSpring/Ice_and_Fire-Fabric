@@ -4,8 +4,8 @@ import com.github.alexthe666.iceandfire.entity.EntityDreadKnight;
 import com.github.alexthe666.iceandfire.util.IAFMath;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -13,7 +13,7 @@ public class DreadAIRideHorse extends Goal {
     private final EntityDreadKnight knight;
     private AbstractHorse horse;
 
-    @Nonnull
+    @NotNull
     private List<AbstractHorse> list = IAFMath.emptyAbstractHorseEntityList;
 
     public DreadAIRideHorse(EntityDreadKnight knight) {

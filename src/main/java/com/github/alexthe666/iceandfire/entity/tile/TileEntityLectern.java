@@ -2,10 +2,15 @@ package com.github.alexthe666.iceandfire.entity.tile;
 
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.enums.EnumBestiaryPages;
+import com.github.alexthe666.iceandfire.fabric.transfer.SidedInvWrapper;
 import com.github.alexthe666.iceandfire.inventory.ContainerLectern;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.github.alexthe666.iceandfire.item.ItemBestiary;
 import com.github.alexthe666.iceandfire.message.MessageUpdateLectern;
+import io.github.fabricators_of_create.porting_lib.block.CustomDataPacketHandlingBlockEntity;
+import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -24,16 +29,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class TileEntityLectern extends BaseContainerBlockEntity implements WorldlyContainer {
+public class TileEntityLectern extends BaseContainerBlockEntity implements WorldlyContainer, CustomDataPacketHandlingBlockEntity {
     private static final int[] slotsTop = new int[]{0};
     private static final int[] slotsSides = new int[]{1};
     private static final int[] slotsBottom = new int[]{0};
@@ -60,13 +64,25 @@ public class TileEntityLectern extends BaseContainerBlockEntity implements World
     public float pageHelp1;
     public float pageHelp2;
     public EnumBestiaryPages[] selectedPages = new EnumBestiaryPages[3];
-    net.minecraftforge.common.util.LazyOptional<? extends net.minecraftforge.items.IItemHandler>[] handlers =
-        net.minecraftforge.items.wrapper.SidedInvWrapper.create(this, Direction.UP, Direction.DOWN);
+    LazyOptional<? extends SlottedStackStorage>[] handlers =
+        SidedInvWrapper.create(this, Direction.UP, Direction.DOWN);
     private final Random localRand = new Random();
     private NonNullList<ItemStack> stacks = NonNullList.withSize(3, ItemStack.EMPTY);
 
     public TileEntityLectern(BlockPos pos, BlockState state) {
         super(IafTileEntityRegistry.IAF_LECTERN.get(), pos, state);
+    }
+
+    static {
+        ItemStorage.SIDED.registerForBlockEntity(((blockEntity, direction) -> {
+            if (direction == null || blockEntity.remove)
+                return null;
+
+            if (direction == Direction.DOWN)
+                return blockEntity.handlers[1].orElse(null);
+            else
+                return blockEntity.handlers[0].orElse(null);
+        }), IafTileEntityRegistry.IAF_LECTERN.get());
     }
 
     public static void bookAnimationTick(Level p_155504_, BlockPos p_155505_, BlockState p_155506_, TileEntityLectern p_155507_) {
@@ -287,17 +303,6 @@ public class TileEntityLectern extends BaseContainerBlockEntity implements World
             }
         }
         return true;
-    }
-
-    @Override
-    public <T> net.minecraftforge.common.util.@NotNull LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.@NotNull Capability<T> capability, @Nullable Direction facing) {
-        if (!this.remove && facing != null && capability == ForgeCapabilities.ITEM_HANDLER) {
-            if (facing == Direction.DOWN)
-                return handlers[1].cast();
-            else
-                return handlers[0].cast();
-        }
-        return super.getCapability(capability, facing);
     }
 
     @Nullable

@@ -1,6 +1,7 @@
 package com.github.alexthe666.iceandfire.client.render.tile;
 
 import com.github.alexthe666.iceandfire.entity.tile.TileEntityGhostChest;
+import io.github.fabricators_of_create.porting_lib.util.MaterialChest;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.ChestRenderer;
 import net.minecraft.client.resources.model.Material;
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import static com.github.alexthe666.iceandfire.client.IafClientSetup.*;
 import static net.minecraft.client.renderer.Sheets.CHEST_SHEET;
 
-public class RenderGhostChest extends ChestRenderer<TileEntityGhostChest> {
+public class RenderGhostChest extends ChestRenderer<TileEntityGhostChest> implements MaterialChest<TileEntityGhostChest> {
 
     private static final Material GHOST_CHEST = new Material(CHEST_SHEET, GHOST_CHEST_LOCATION);
     private static final Material GHOST_CHEST_LEFT = new Material(CHEST_SHEET, GHOST_CHEST_LEFT_LOCATION);
@@ -33,7 +34,7 @@ public class RenderGhostChest extends ChestRenderer<TileEntityGhostChest> {
     }
 
     @Override
-    protected @NotNull Material getMaterial(@NotNull TileEntityGhostChest tileEntity, @NotNull ChestType chestType) {
+    public @NotNull Material getMaterial(@NotNull TileEntityGhostChest tileEntity, @NotNull ChestType chestType) {
 
         return getChestMaterial(chestType, GHOST_CHEST, GHOST_CHEST_LEFT, GHOST_CHEST_RIGHT);
     }

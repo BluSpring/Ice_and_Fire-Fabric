@@ -1,17 +1,26 @@
 package com.github.alexthe666.iceandfire.message;
 
+import com.github.alexthe666.citadel.server.message.CitadelPacket;
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.entity.util.MyrmexHive;
 import com.github.alexthe666.iceandfire.world.MyrmexWorldData;
+import me.pepperbell.simplenetworking.SimpleChannel;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class MessageGetMyrmexHive {
+public class MessageGetMyrmexHive implements CitadelPacket {
 
     public CompoundTag hive;
 
@@ -20,6 +29,22 @@ public class MessageGetMyrmexHive {
     }
 
     public MessageGetMyrmexHive() {
+    }
+
+    @Override
+    public void handle(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl listener, PacketSender responseSender, SimpleChannel channel) {
+        Handler.handle(this, player, server);
+    }
+
+    @Environment(EnvType.CLIENT)
+    @Override
+    public void handle(Minecraft client, ClientPacketListener listener, PacketSender responseSender, SimpleChannel channel) {
+        Handler.handle(this, client.player, client);
+    }
+
+    @Override
+    public void encode(FriendlyByteBuf buf) {
+        write(this, buf);
     }
 
     public static MessageGetMyrmexHive read(FriendlyByteBuf buf) {
@@ -34,16 +59,8 @@ public class MessageGetMyrmexHive {
         public Handler() {
         }
 
-        public static void handle(final MessageGetMyrmexHive message, final Supplier<NetworkEvent.Context> contextSupplier) {
-            NetworkEvent.Context context = contextSupplier.get();
-
-            context.enqueueWork(() -> {
-                Player player = context.getSender();
-
-                if (context.getDirection().getReceptionSide() == LogicalSide.CLIENT) {
-                    player = IceAndFire.PROXY.getClientSidePlayer();
-                }
-
+        public static void handle(final MessageGetMyrmexHive message, Player player, BlockableEventLoop<?> loop) {
+            loop.execute(() -> {
                 MyrmexHive serverHive = MyrmexHive.fromNBT(message.hive);
                 CompoundTag tag = new CompoundTag();
                 serverHive.writeVillageDataToNBT(tag);
@@ -55,8 +72,6 @@ public class MessageGetMyrmexHive {
                     realHive.readVillageDataFromNBT(serverHive.toNBT());
                 }
             });
-
-            context.setPacketHandled(true);
         }
     }
 }

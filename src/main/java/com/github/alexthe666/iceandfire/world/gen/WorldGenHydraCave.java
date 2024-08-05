@@ -81,7 +81,7 @@ public class WorldGenHydraCave extends Feature<NoneFeatureConfiguration> impleme
                         if (rand.nextInt(9) == 0) {
                             Holder<ConfiguredFeature<?, ?>> holder = context.level().registryAccess().registryOrThrow(Registries.CONFIGURED_FEATURE).getHolder(TreeFeatures.SWAMP_OAK).orElse((Holder.Reference<ConfiguredFeature<?, ?>>)null);
                             if (holder != null)
-                                holder.get().place(worldIn, generator, rand, blockpos.above());
+                                holder.value().place(worldIn, generator, rand, blockpos.above());
                         }
 
                     }

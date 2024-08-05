@@ -1,9 +1,8 @@
 package com.github.alexthe666.iceandfire.api.event;
 
 import com.github.alexthe666.iceandfire.entity.EntityDragonBase;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.eventbus.api.Cancelable;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 
 /**
  * DragonFireEvent is fired right before a Dragon breathes fire or ice. <br>
@@ -12,25 +11,30 @@ import net.minecraftforge.eventbus.api.Cancelable;
  * {@link #targetY} y coordinate being targeted for burning/freezing. <br>
  * {@link #targetZ} z coordinate being targeted for burning/freezing. <br>
  * <br>
- * This event is {@link Cancelable}.<br>
  * If this event is canceled, no fire will be spawned from the dragon's mouth.<br>
  * <br>
- * This event does not have a result. {@link HasResult}<br>
  * <br>
  * <br>
  * If you only want to deal with the damage caused by dragon fire, see {@link DragonFireDamageWorldEvent} <br>
  * <br>
- * This event is fired on the {@link MinecraftForge#EVENT_BUS}.
+ * false - cancel
  **/
-@Cancelable
-public class DragonFireEvent extends LivingEvent {
+public class DragonFireEvent {
     private EntityDragonBase dragonBase;
     private double targetX;
     private double targetY;
     private double targetZ;
 
+    public static final Event<DragonFireCallback> EVENT = EventFactory.createArrayBacked(DragonFireCallback.class, callbacks -> event -> {
+        for (DragonFireCallback callback : callbacks) {
+            if (!callback.onDragonFire(event))
+                return true;
+        }
+
+        return false;
+    });
+
     public DragonFireEvent(EntityDragonBase dragonBase, double targetX, double targetY, double targetZ) {
-        super(dragonBase);
         this.dragonBase = dragonBase;
         this.targetX = targetX;
         this.targetY = targetY;
@@ -53,4 +57,7 @@ public class DragonFireEvent extends LivingEvent {
         return targetZ;
     }
 
+    public interface DragonFireCallback {
+        boolean onDragonFire(DragonFireEvent event);
+    }
 }

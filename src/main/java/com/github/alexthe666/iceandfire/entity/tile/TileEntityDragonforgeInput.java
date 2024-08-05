@@ -3,6 +3,9 @@ package com.github.alexthe666.iceandfire.entity.tile;
 import com.github.alexthe666.iceandfire.block.BlockDragonforgeInput;
 import com.github.alexthe666.iceandfire.block.IafBlockRegistry;
 import com.github.alexthe666.iceandfire.entity.EntityDragonBase;
+import io.github.fabricators_of_create.porting_lib.block.CustomDataPacketHandlingBlockEntity;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -15,14 +18,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
-public class TileEntityDragonforgeInput extends BlockEntity {
+public class TileEntityDragonforgeInput extends BlockEntity implements CustomDataPacketHandlingBlockEntity {
     private static final int LURE_DISTANCE = 50;
     private static final Direction[] HORIZONTALS = new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
     private int ticksSinceDragonFire;
@@ -162,12 +162,13 @@ public class TileEntityDragonforgeInput extends BlockEntity {
         return null;
     }
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull final Capability<T> capability, @Nullable final Direction facing) {
-        if (core != null && capability == ForgeCapabilities.ITEM_HANDLER) {
-            return core.getCapability(capability, facing);
-        }
+    static {
+        ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> {
+            if (blockEntity.core != null) {
+                return ItemStorage.SIDED.find(blockEntity.core.getLevel(), blockEntity.core.getBlockPos(), direction);
+            }
 
-        return super.getCapability(capability, facing);
+            return null;
+        }, IafTileEntityRegistry.DRAGONFORGE_INPUT.get());
     }
 }

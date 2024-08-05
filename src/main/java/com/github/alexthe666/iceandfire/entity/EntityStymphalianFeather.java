@@ -2,6 +2,8 @@ package com.github.alexthe666.iceandfire.entity;
 
 import com.github.alexthe666.iceandfire.IafConfig;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
+import io.github.fabricators_of_create.porting_lib.entity.PortingLibEntity;
+import io.github.fabricators_of_create.porting_lib.tool.ToolActions;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.sounds.SoundEvents;
@@ -16,9 +18,6 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityStymphalianFeather extends AbstractArrow {
@@ -32,13 +31,9 @@ public class EntityStymphalianFeather extends AbstractArrow {
         this.setBaseDamage(IafConfig.stymphalianBirdFeatherAttackStength);
     }
 
-    public EntityStymphalianFeather(PlayMessages.SpawnEntity spawnEntity, Level world) {
-        this(IafEntityRegistry.STYMPHALIAN_FEATHER.get(), world);
-    }
-
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PortingLibEntity.getEntitySpawningPacket(this);
     }
 
     @Override
@@ -71,7 +66,7 @@ public class EntityStymphalianFeather extends AbstractArrow {
                 LivingEntity LivingEntity = (LivingEntity) entityHit.getEntity();
                 LivingEntity.setArrowCount(LivingEntity.getArrowCount() - 1);
                 ItemStack itemstack1 = LivingEntity.isUsingItem() ? LivingEntity.getUseItem() : ItemStack.EMPTY;
-                if (itemstack1.getItem().canPerformAction(itemstack1, ToolActions.SHIELD_BLOCK)) {
+                if (itemstack1.canPerformAction(ToolActions.SHIELD_BLOCK)) {
                     damageShield(LivingEntity, 1.0F);
                 }
             }
@@ -80,7 +75,7 @@ public class EntityStymphalianFeather extends AbstractArrow {
     }
 
     protected void damageShield(LivingEntity entity, float damage) {
-        if (damage >= 3.0F && entity.getUseItem().getItem().canPerformAction(entity.getUseItem(), ToolActions.SHIELD_BLOCK)) {
+        if (damage >= 3.0F && entity.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK)) {
             ItemStack copyBeforeUse = entity.getUseItem().copy();
             int i = 1 + Mth.floor(damage);
             InteractionHand Hand = entity.getUsedItemHand();
@@ -89,7 +84,7 @@ public class EntityStymphalianFeather extends AbstractArrow {
             });
             if (entity.getUseItem().isEmpty()) {
                 if (entity instanceof Player) {
-                    net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem((Player) entity, copyBeforeUse, Hand);
+                    //net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem((Player) entity, copyBeforeUse, Hand);
                 }
 
                 if (Hand == net.minecraft.world.InteractionHand.MAIN_HAND) {

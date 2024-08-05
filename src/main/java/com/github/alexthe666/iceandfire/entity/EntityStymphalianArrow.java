@@ -1,6 +1,7 @@
 package com.github.alexthe666.iceandfire.entity;
 
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
+import io.github.fabricators_of_create.porting_lib.entity.PortingLibEntity;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.util.Mth;
@@ -9,8 +10,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityStymphalianArrow extends AbstractArrow {
@@ -27,13 +26,9 @@ public class EntityStymphalianArrow extends AbstractArrow {
         this.setBaseDamage(3.5F);
     }
 
-    public EntityStymphalianArrow(PlayMessages.SpawnEntity spawnEntity, Level world) {
-        this(IafEntityRegistry.STYMPHALIAN_ARROW.get(), world);
-    }
-
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PortingLibEntity.getEntitySpawningPacket(this);
     }
 
     public EntityStymphalianArrow(EntityType t, Level worldIn, LivingEntity shooter) {

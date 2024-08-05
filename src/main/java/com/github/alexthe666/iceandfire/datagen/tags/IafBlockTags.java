@@ -2,21 +2,20 @@ package com.github.alexthe666.iceandfire.datagen.tags;
 
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.block.IafBlockRegistry;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import io.github.fabricators_of_create.porting_lib.tags.data.BlockTagProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
-public class IafBlockTags extends BlockTagsProvider {
+public class IafBlockTags extends BlockTagProvider {
     public static TagKey<Block> CHARRED_BLOCKS = createKey("charred_blocks");
     public static TagKey<Block> FROZEN_BLOCKS = createKey("frozen_blocks");
     public static TagKey<Block> CRACKLED_BLOCKS = createKey("crackled_blocks");
@@ -33,8 +32,8 @@ public class IafBlockTags extends BlockTagsProvider {
     public static TagKey<Block> DRAGON_BLOCK_BREAK_BLACKLIST = createKey("dragon_block_break_blacklist");
     public static TagKey<Block> DRAGON_BLOCK_BREAK_NO_DROPS = createKey("dragon_block_break_no_drops");
 
-    public IafBlockTags(PackOutput output, CompletableFuture<HolderLookup.Provider> future, ExistingFileHelper helper) {
-        super(output, future, IceAndFire.MODID, helper);
+    public IafBlockTags(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> future) {
+        super(output, future);
     }
 
     @Override

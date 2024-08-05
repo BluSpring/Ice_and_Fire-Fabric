@@ -7,8 +7,10 @@ import com.github.alexthe666.iceandfire.entity.*;
 import com.github.alexthe666.iceandfire.misc.IafTagRegistry;
 import com.google.common.base.Predicate;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.Entity;
@@ -19,16 +21,15 @@ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.AbstractGolem;
 import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class DragonUtils {
@@ -295,10 +296,7 @@ public class DragonUtils {
     }
 
     public static boolean isVillager(Entity entity) {
-        var tags =  ForgeRegistries.ENTITY_TYPES.tags();
-        if (tags == null)
-            return false;
-        return entity.getType().is(tags.createTagKey(IafTagRegistry.VILLAGERS));
+        return entity.getType().is(TagKey.create(Registries.ENTITY_TYPE, IafTagRegistry.VILLAGERS));
     }
 
     public static boolean isAnimaniaMob(Entity entity) {
@@ -306,7 +304,7 @@ public class DragonUtils {
     }
 
     public static boolean isDragonTargetable(Entity entity, ResourceLocation tag) {
-        return entity.getType().is(ForgeRegistries.ENTITY_TYPES.tags().createTagKey(tag));
+        return entity.getType().is(TagKey.create(Registries.ENTITY_TYPE, tag));
     }
 
     public static String getDimensionName(Level world) {
@@ -318,7 +316,7 @@ public class DragonUtils {
     }
 
     public static boolean canDragonBreak(final BlockState state, final Entity entity) {
-        if (!ForgeEventFactory.getMobGriefingEvent(entity.level(), entity)) {
+        if (!entity.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
             return false;
         }
 

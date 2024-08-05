@@ -30,7 +30,7 @@ public class IndexPageButton extends Button {
             boolean flag = isHoveredOrFocused();
             pGuiGraphics.blit(new ResourceLocation("iceandfire:textures/gui/bestiary/widgets.png"), this.getX(), this.getY(), 0, flag ? 32 : 0, this.width, this.height);
             pGuiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
-            int i = getFGColor();
+            int i = this.active ? 16777215 : 10526880;
             this.renderString(pGuiGraphics, font, i | Mth.ceil(this.alpha * 255.0F) << 24);
         }
     }

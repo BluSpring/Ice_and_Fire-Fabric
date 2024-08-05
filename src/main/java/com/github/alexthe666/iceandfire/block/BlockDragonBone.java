@@ -3,11 +3,9 @@ package com.github.alexthe666.iceandfire.block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
-import org.jetbrains.annotations.NotNull;
 
 public class BlockDragonBone extends RotatedPillarBlock implements IDragonProof {
 
@@ -20,12 +18,8 @@ public class BlockDragonBone extends RotatedPillarBlock implements IDragonProof 
                 .sound(SoundType.WOOD)
                 .strength(30F, 500F)
                 .requiresCorrectToolForDrops()
+                .pushReaction(PushReaction.BLOCK)
 		);
 
-    }
-
-    @Override
-    public @NotNull PushReaction getPistonPushReaction(@NotNull BlockState state) {
-        return PushReaction.BLOCK;
     }
 }

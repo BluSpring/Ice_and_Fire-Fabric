@@ -4,10 +4,10 @@ import com.github.alexthe666.citadel.server.item.CustomArmorMaterial;
 import com.github.alexthe666.iceandfire.item.IafArmorMaterial;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.github.alexthe666.iceandfire.item.ItemScaleArmor;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.RegistryObject;
 
 public enum EnumDragonArmor {
 

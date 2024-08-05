@@ -1,5 +1,6 @@
 package com.github.alexthe666.iceandfire.world;
 
+/*
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.entity.IafEntityRegistry;
 import com.mojang.serialization.Codec;
@@ -33,3 +34,4 @@ public class IafMobSpawnBiomeModifier implements BiomeModifier {
         return Codec.unit(IafMobSpawnBiomeModifier::new);
     }
 }
+ */

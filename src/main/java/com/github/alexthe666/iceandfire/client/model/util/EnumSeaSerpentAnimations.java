@@ -2,8 +2,8 @@ package com.github.alexthe666.iceandfire.client.model.util;
 
 import com.github.alexthe666.citadel.client.model.TabulaModel;
 import com.github.alexthe666.iceandfire.IceAndFire;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.loader.api.FabricLoader;
 
 public enum EnumSeaSerpentAnimations {
     T_POSE("base"),
@@ -33,7 +33,7 @@ public enum EnumSeaSerpentAnimations {
 
 
     public static void initializeSerpentModels() {
-        if (FMLEnvironment.dist == Dist.CLIENT) {
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
             for (EnumSeaSerpentAnimations animation : values()) {
                 try {
                     animation.seaserpent_model = new TabulaModel(TabulaModelHandlerHelper.loadTabulaModel("/assets/iceandfire/models/tabula/seaserpent/seaserpent_" + animation.fileSuffix));

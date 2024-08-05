@@ -2,13 +2,20 @@ package com.github.alexthe666.iceandfire.api.event;
 
 import com.github.alexthe666.iceandfire.client.render.tile.RenderPodium;
 import com.github.alexthe666.iceandfire.entity.tile.TileEntityPodium;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.Event;
 
 /*
     Called before an item is rendered on a podium. Cancel to remove default render of item
  */
-public class RenderPodiumItemEvent extends Event {
+public class RenderPodiumItemEvent {
+    public static final Event<RenderPodiumItemCallback> EVENT = EventFactory.createArrayBacked(RenderPodiumItemCallback.class, callbacks -> event -> {
+        for (RenderPodiumItemCallback callback : callbacks) {
+            callback.onRender(event);
+        }
+    });
+
     float partialTicks;
     double x, y, z;
     private final RenderPodium<?> render;
@@ -50,5 +57,9 @@ public class RenderPodiumItemEvent extends Event {
 
     public double getZ() {
         return z;
+    }
+
+    public interface RenderPodiumItemCallback {
+        void onRender(RenderPodiumItemEvent event);
     }
 }

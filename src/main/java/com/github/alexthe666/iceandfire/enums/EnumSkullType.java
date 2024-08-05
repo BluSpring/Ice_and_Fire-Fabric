@@ -2,8 +2,8 @@ package com.github.alexthe666.iceandfire.enums;
 
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.github.alexthe666.iceandfire.item.ItemMobSkull;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Locale;
 

@@ -1,6 +1,7 @@
 package com.github.alexthe666.iceandfire.item;
 
 import com.github.alexthe666.iceandfire.misc.IafSoundRegistry;
+import io.github.fabricators_of_create.porting_lib.item.ShieldBlockItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
@@ -13,12 +14,12 @@ import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class ItemAmphithereMacuahuitl extends SwordItem {
+public class ItemAmphithereMacuahuitl extends SwordItem implements ShieldBlockItem {
 
     public ItemAmphithereMacuahuitl() {
         super(IafItemRegistry.AMPHITHERE_SWORD_TOOL_MATERIAL, 3, -2.4F, new Item.Properties()/*.tab(IceAndFire.TAB_ITEMS)*/);

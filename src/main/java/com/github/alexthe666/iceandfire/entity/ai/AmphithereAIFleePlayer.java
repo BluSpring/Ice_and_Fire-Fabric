@@ -8,8 +8,8 @@ import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class AmphithereAIFleePlayer extends Goal {
     protected Player closestLivingEntity;
     private Path path;
 
-    @Nonnull
+    @NotNull
     private List<Player> list = IAFMath.emptyPlayerEntityList;
 
     public AmphithereAIFleePlayer(EntityAmphithere entityIn, float avoidDistanceIn, double farSpeedIn, double nearSpeedIn) {

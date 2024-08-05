@@ -1,5 +1,6 @@
 package com.github.alexthe666.iceandfire.entity.tile;
 
+import io.github.fabricators_of_create.porting_lib.block.CustomDataPacketHandlingBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -19,9 +20,9 @@ import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
-public class TileEntityMyrmexCocoon extends RandomizableContainerBlockEntity {
+public class TileEntityMyrmexCocoon extends RandomizableContainerBlockEntity implements CustomDataPacketHandlingBlockEntity {
 
     private NonNullList<ItemStack> chestContents = NonNullList.withSize(18, ItemStack.EMPTY);
 

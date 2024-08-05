@@ -3,6 +3,8 @@ package com.github.alexthe666.iceandfire.entity;
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.enums.EnumParticles;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
+import io.github.fabricators_of_create.porting_lib.entity.PortingLibEntity;
+import io.github.fabricators_of_create.porting_lib.entity.events.ProjectileImpactEvent;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -19,8 +21,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityPixieCharge extends Fireball {
@@ -31,11 +31,6 @@ public class EntityPixieCharge extends Fireball {
     public EntityPixieCharge(EntityType<? extends Fireball> t, Level worldIn) {
         super(t, worldIn);
         rgb = EntityPixie.PARTICLE_RGB[random.nextInt(EntityPixie.PARTICLE_RGB.length - 1)];
-    }
-
-
-    public EntityPixieCharge(PlayMessages.SpawnEntity spawnEntity, Level worldIn) {
-        this(IafEntityRegistry.PIXIE_CHARGE.get(), worldIn);
     }
 
     public EntityPixieCharge(EntityType<? extends Fireball> t, Level worldIn, double posX, double posY,
@@ -60,7 +55,7 @@ public class EntityPixieCharge extends Fireball {
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PortingLibEntity.getEntitySpawningPacket(this);
     }
 
     @Override
@@ -93,7 +88,12 @@ public class EntityPixieCharge extends Fireball {
 
             ++this.ticksInAir;
             HitResult raytraceresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-            if (raytraceresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+
+            var event = new ProjectileImpactEvent(this, raytraceresult);
+            if (raytraceresult.getType() != HitResult.Type.MISS)
+                event.sendEvent();
+
+            if (raytraceresult.getType() != HitResult.Type.MISS && !event.isCanceled()) {
                 this.onHit(raytraceresult);
             }
 

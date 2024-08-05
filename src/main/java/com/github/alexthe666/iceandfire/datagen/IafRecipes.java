@@ -8,6 +8,8 @@ import com.github.alexthe666.iceandfire.enums.EnumSeaSerpent;
 import com.github.alexthe666.iceandfire.enums.EnumTroll;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.github.alexthe666.iceandfire.item.ItemDragonArmor;
+import io.github.fabricators_of_create.porting_lib.tags.Tags;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.resources.ResourceLocation;
@@ -17,8 +19,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.common.Tags;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class IafRecipes extends RecipeProvider {
     }
 
     @Override
-    protected void buildRecipes(Consumer<FinishedRecipe> consumer) {
+    public void buildRecipes(Consumer<FinishedRecipe> consumer) {
         createShaped(consumer);
         createShapeless(consumer);
 
@@ -735,8 +735,8 @@ public class IafRecipes extends RecipeProvider {
     }
 
     private void compact(@NotNull final Consumer<FinishedRecipe> consumer, final ItemLike unpacked, final ItemLike packed) {
-        String packedPath = ForgeRegistries.ITEMS.getKey(packed.asItem()).getPath();
-        String unpackedPath = ForgeRegistries.ITEMS.getKey(unpacked.asItem()).getPath();
+        String packedPath = BuiltInRegistries.ITEM.getKey(packed.asItem()).getPath();
+        String unpackedPath = BuiltInRegistries.ITEM.getKey(unpacked.asItem()).getPath();
 
 
         nineBlockStorageRecipes(consumer, RecipeCategory.MISC, unpacked, RecipeCategory.BUILDING_BLOCKS, packed

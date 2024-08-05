@@ -17,12 +17,10 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraftforge.client.extensions.common.IClientBlockExtensions;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Random;
-import java.util.function.Consumer;
 
 import static com.github.alexthe666.iceandfire.entity.tile.IafTileEntityRegistry.PIXIE_HOUSE;
 
@@ -77,11 +75,6 @@ public class BlockPixieHouse extends BaseEntityBlock {
         } else {
             return true;
         }
-    }
-
-    @Override
-    public void initializeClient(@NotNull Consumer<IClientBlockExtensions> consumer) {
-        super.initializeClient(consumer);
     }
 
     @Override

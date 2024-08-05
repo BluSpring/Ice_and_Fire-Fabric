@@ -3,6 +3,8 @@ package com.github.alexthe666.iceandfire.entity;
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.enums.EnumParticles;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
+import io.github.fabricators_of_create.porting_lib.entity.PortingLibEntity;
+import io.github.fabricators_of_create.porting_lib.tool.ToolActions;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.sounds.SoundEvents;
@@ -18,9 +20,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.ToolActions;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityHydraArrow extends AbstractArrow {
@@ -36,13 +35,9 @@ public class EntityHydraArrow extends AbstractArrow {
         this.setBaseDamage(5F);
     }
 
-    public EntityHydraArrow(PlayMessages.SpawnEntity spawnEntity, Level worldIn) {
-        this(IafEntityRegistry.HYDRA_ARROW.get(), worldIn);
-    }
-
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PortingLibEntity.getEntitySpawningPacket(this);
     }
 
 
@@ -67,7 +62,7 @@ public class EntityHydraArrow extends AbstractArrow {
     }
 
     protected void damageShield(Player player, float damage) {
-        if (damage >= 3.0F && player.getUseItem().getItem().canPerformAction(player.getUseItem(), ToolActions.SHIELD_BLOCK)) {
+        if (damage >= 3.0F && player.getUseItem().canPerformAction(ToolActions.SHIELD_BLOCK)) {
             ItemStack copyBeforeUse = player.getUseItem().copy();
             int i = 1 + Mth.floor(damage);
             player.getUseItem().hurtAndBreak(i, player, (p_213360_0_) -> {
@@ -76,7 +71,7 @@ public class EntityHydraArrow extends AbstractArrow {
 
             if (player.getUseItem().isEmpty()) {
                 InteractionHand Hand = player.getUsedItemHand();
-                net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, copyBeforeUse, Hand);
+                //net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(player, copyBeforeUse, Hand);
 
                 if (Hand == net.minecraft.world.InteractionHand.MAIN_HAND) {
                     this.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);

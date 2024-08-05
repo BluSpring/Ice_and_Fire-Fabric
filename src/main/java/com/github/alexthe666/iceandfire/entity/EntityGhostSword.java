@@ -1,6 +1,8 @@
 package com.github.alexthe666.iceandfire.entity;
 
 import com.google.common.collect.Lists;
+import io.github.fabricators_of_create.porting_lib.entity.PortingLibEntity;
+import io.github.fabricators_of_create.porting_lib.entity.events.ProjectileImpactEvent;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
@@ -22,8 +24,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -46,10 +46,6 @@ public class EntityGhostSword extends AbstractArrow {
                             double dmg) {
         super(type, shooter, worldIn);
         this.setBaseDamage(dmg);
-    }
-
-    public EntityGhostSword(PlayMessages.SpawnEntity spawnEntity, Level worldIn) {
-        this(IafEntityRegistry.GHOST_SWORD.get(), worldIn);
     }
 
     @Override
@@ -107,7 +103,10 @@ public class EntityGhostSword extends AbstractArrow {
                 }
             }
 
-            if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+            var event = new ProjectileImpactEvent(this, raytraceresult);
+            event.sendEvent();
+
+            if (raytraceresult != null && raytraceresult.getType() != HitResult.Type.MISS && !event.isCanceled()) {
                 if (raytraceresult.getType() != HitResult.Type.BLOCK) {
                     this.onHit(raytraceresult);
 
@@ -150,7 +149,7 @@ public class EntityGhostSword extends AbstractArrow {
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PortingLibEntity.getEntitySpawningPacket(this);
     }
 
     private IntOpenHashSet piercedEntities;

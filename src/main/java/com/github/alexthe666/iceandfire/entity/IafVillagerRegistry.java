@@ -6,9 +6,12 @@ import com.github.alexthe666.iceandfire.datagen.IafProcessorLists;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
+import io.github.fabricators_of_create.porting_lib.util.LazyRegistrar;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.ai.village.poi.PoiType;
@@ -21,20 +24,15 @@ import net.minecraft.world.level.levelgen.structure.pools.SinglePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = IceAndFire.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class IafVillagerRegistry {
 
-    public static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(ForgeRegistries.POI_TYPES, IceAndFire.MODID);
+    public static final LazyRegistrar<PoiType> POI_TYPES = LazyRegistrar.create(BuiltInRegistries.POINT_OF_INTEREST_TYPE, IceAndFire.MODID);
     public static final RegistryObject<PoiType> SCRIBE_POI = POI_TYPES.register("scribe", () -> new PoiType(ImmutableSet.copyOf(IafBlockRegistry.LECTERN.get().getStateDefinition().getPossibleStates()), 1, 1));
-    public static final DeferredRegister<VillagerProfession> PROFESSIONS = DeferredRegister.create(ForgeRegistries.VILLAGER_PROFESSIONS, IceAndFire.MODID);
+    public static final LazyRegistrar<VillagerProfession> PROFESSIONS = LazyRegistrar.create(BuiltInRegistries.VILLAGER_PROFESSION, IceAndFire.MODID);
     public static final RegistryObject<VillagerProfession> SCRIBE = PROFESSIONS.register("scribe", ()-> new VillagerProfession("scribe", (entry) -> entry.value().equals(SCRIBE_POI.get()), (entry) -> entry.value().equals(SCRIBE_POI.get()), ImmutableSet.of(), ImmutableSet.of(), SoundEvents.VILLAGER_WORK_LIBRARIAN));
 
     public static void addScribeTrades(Int2ObjectMap<List<VillagerTrades.ItemListing>> trades) {

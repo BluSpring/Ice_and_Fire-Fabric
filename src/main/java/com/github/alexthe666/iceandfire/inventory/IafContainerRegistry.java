@@ -1,19 +1,19 @@
 package com.github.alexthe666.iceandfire.inventory;
 
 import com.github.alexthe666.iceandfire.IceAndFire;
+import io.github.fabricators_of_create.porting_lib.util.LazyRegistrar;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
 public class IafContainerRegistry {
 
-    public static final DeferredRegister<MenuType<?>> CONTAINERS = DeferredRegister
-        .create(ForgeRegistries.MENU_TYPES, IceAndFire.MODID);
+    public static final LazyRegistrar<MenuType<?>> CONTAINERS = LazyRegistrar
+        .create(BuiltInRegistries.MENU, IceAndFire.MODID);
 
     public static final RegistryObject<MenuType<ContainerLectern>> IAF_LECTERN_CONTAINER = register(
         () -> new MenuType<>(ContainerLectern::new, FeatureFlags.VANILLA_SET), "iaf_lectern");

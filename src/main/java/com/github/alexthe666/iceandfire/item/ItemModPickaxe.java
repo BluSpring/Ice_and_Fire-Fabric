@@ -3,6 +3,7 @@ package com.github.alexthe666.iceandfire.item;
 import com.github.alexthe666.iceandfire.IafConfig;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import io.github.fabricators_of_create.porting_lib.item.DamageableItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,10 +14,10 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
-public class ItemModPickaxe extends PickaxeItem implements DragonSteelOverrides<ItemModPickaxe> {
+public class ItemModPickaxe extends PickaxeItem implements DragonSteelOverrides<ItemModPickaxe>, DamageableItem {
 
     private Multimap<Attribute, AttributeModifier> dragonsteelModifiers;
 

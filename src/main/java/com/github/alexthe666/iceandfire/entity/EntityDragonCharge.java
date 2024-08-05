@@ -2,6 +2,8 @@ package com.github.alexthe666.iceandfire.entity;
 
 import com.github.alexthe666.iceandfire.entity.util.DragonUtils;
 import com.github.alexthe666.iceandfire.entity.util.IDragonProjectile;
+import io.github.fabricators_of_create.porting_lib.entity.PortingLibEntity;
+import io.github.fabricators_of_create.porting_lib.entity.events.ProjectileImpactEvent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.Packet;
@@ -17,10 +19,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class EntityDragonCharge extends Fireball implements IDragonProjectile {
 
@@ -55,7 +55,9 @@ public abstract class EntityDragonCharge extends Fireball implements IDragonProj
 
             HitResult raytraceresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitMob);
 
-            if (raytraceresult.getType() != HitResult.Type.MISS && !net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, raytraceresult)) {
+            var event = new ProjectileImpactEvent(this, raytraceresult);
+            event.sendEvent();
+            if (raytraceresult.getType() != HitResult.Type.MISS && !event.isCanceled()) {
                 this.onHit(raytraceresult);
             }
 
@@ -166,6 +168,6 @@ public abstract class EntityDragonCharge extends Fireball implements IDragonProj
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return PortingLibEntity.getEntitySpawningPacket(this);
     }
 }

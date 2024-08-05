@@ -42,10 +42,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
-import net.minecraftforge.common.MinecraftForge;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityMyrmexQueen extends EntityMyrmexBase {
 
@@ -141,7 +139,7 @@ public class EntityMyrmexQueen extends EntityMyrmexBase {
             if (this.getAnimationTick() == 42) {
                 int down = Math.max(15, this.blockPosition().getY() - 20 + this.getRandom().nextInt(10));
                 BlockPos genPos = new BlockPos(this.getBlockX(), down, this.getBlockZ());
-                if (!MinecraftForge.EVENT_BUS.post(new GenericGriefEvent(this, genPos.getX(), genPos.getY(), genPos.getZ()))) {
+                if (!GenericGriefEvent.EVENT.invoker().onGrief(new GenericGriefEvent(this, genPos.getX(), genPos.getY(), genPos.getZ()))) {
                     WorldGenMyrmexHive hiveGen = new WorldGenMyrmexHive(true, this.isJungle(), NoneFeatureConfiguration.CODEC);
                     if (!level().isClientSide && level() instanceof ServerLevel) {
                         hiveGen.placeSmallGen((ServerLevel) level(), this.getRandom(), genPos);

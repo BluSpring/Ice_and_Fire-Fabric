@@ -9,9 +9,9 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
@@ -22,7 +22,7 @@ public class AmphithereAITargetItems<T extends ItemEntity> extends TargetGoal {
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected ItemEntity targetEntity;
     protected final int targetChance;
-    @Nonnull
+    @NotNull
     private List<ItemEntity> list = IAFMath.emptyItemEntityList;
 
     public AmphithereAITargetItems(Mob creature, boolean checkSight) {

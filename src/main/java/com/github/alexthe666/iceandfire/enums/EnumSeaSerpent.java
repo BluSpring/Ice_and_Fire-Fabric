@@ -7,12 +7,12 @@ import com.github.alexthe666.iceandfire.item.IafArmorMaterial;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.github.alexthe666.iceandfire.item.ItemSeaSerpentArmor;
 import com.github.alexthe666.iceandfire.item.ItemSeaSerpentScales;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.minecraft.ChatFormatting;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Locale;
 

@@ -10,9 +10,9 @@ import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -22,7 +22,7 @@ public class HippogryphAITargetItems<T extends ItemEntity> extends TargetGoal {
     protected final Predicate<? super ItemEntity> targetEntitySelector;
     protected ItemEntity targetEntity;
     protected final int targetChance;
-    @Nonnull
+    @NotNull
     private List<ItemEntity> list = IAFMath.emptyItemEntityList;
 
     public HippogryphAITargetItems(Mob creature, boolean checkSight) {

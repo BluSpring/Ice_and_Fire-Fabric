@@ -1,6 +1,6 @@
 package com.github.alexthe666.iceandfire.datagen;
 
-import com.github.alexthe666.iceandfire.IceAndFire;
+/*import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.datagen.util.ListHolderSet;
 import com.github.alexthe666.iceandfire.world.IafFeatureBiomeModifier;
 import net.minecraft.core.Holder;
@@ -61,3 +61,4 @@ public class IafBiomeModifierSerializers {
         context.register(FEATURES, new IafFeatureBiomeModifier(createHolderSet(holderGetter, features)));
     }
 }
+*/

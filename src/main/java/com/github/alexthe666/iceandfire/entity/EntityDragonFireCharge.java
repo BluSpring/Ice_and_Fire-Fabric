@@ -9,18 +9,12 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Fireball;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.PlayMessages;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class EntityDragonFireCharge extends EntityDragonCharge {
 
     public EntityDragonFireCharge(EntityType<? extends Fireball> type, Level worldIn) {
         super(type, worldIn);
-    }
-
-    public EntityDragonFireCharge(PlayMessages.SpawnEntity spawnEntity, Level worldIn) {
-        this(IafEntityRegistry.FIRE_DRAGON_CHARGE.get(), worldIn);
     }
 
     public EntityDragonFireCharge(EntityType<? extends Fireball> type, Level worldIn, double posX,

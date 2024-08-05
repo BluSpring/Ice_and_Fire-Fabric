@@ -1,5 +1,6 @@
 package com.github.alexthe666.iceandfire.item;
 
+import io.github.fabricators_of_create.porting_lib.item.ArmorTextureItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
@@ -8,12 +9,12 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class ItemModArmor extends ArmorItem {
+public class ItemModArmor extends ArmorItem implements ArmorTextureItem {
 
     public ItemModArmor(ArmorMaterial material, ArmorItem.Type slot) {
         super(material, slot, new Item.Properties()/*.tab(IceAndFire.TAB_ITEMS)*/);

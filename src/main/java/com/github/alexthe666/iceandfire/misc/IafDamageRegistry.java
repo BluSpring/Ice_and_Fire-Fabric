@@ -3,7 +3,6 @@ package com.github.alexthe666.iceandfire.misc;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.DamageTypeTagsProvider;
 import net.minecraft.network.chat.Component;
@@ -14,18 +13,11 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
-import static com.github.alexthe666.iceandfire.IceAndFire.MODID;
-
-@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public class IafDamageRegistry {
     public static final ResourceKey<DamageType> GORGON_DMG_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("iceandfire:gorgon"));
     public static final ResourceKey<DamageType> DRAGON_FIRE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation("iceandfire:dragon_fire"));
@@ -100,24 +92,13 @@ public class IafDamageRegistry {
         return new CustomIndirectEntityDamageSource(holder, source, indirectEntityIn);
     }
 
-    @SubscribeEvent
-    public void gatherData(GatherDataEvent event) {
-        event.getGenerator().addProvider(
-                // Tell generator to run only when server data are generating
-                event.includeServer(),
-                (DataProvider.Factory<IafDamageTypeTagsProvider>) output -> new IafDamageTypeTagsProvider(
-                        event.getGenerator().getPackOutput(),
-                        event.getLookupProvider(),
-                        MODID,
-                        event.getExistingFileHelper()
-                )
-        );
+    public static void init() {
     }
 
     public static class IafDamageTypeTagsProvider extends DamageTypeTagsProvider {
 
-        public IafDamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_, String modId, @org.jetbrains.annotations.Nullable ExistingFileHelper existingFileHelper) {
-            super(p_270719_, p_270256_, modId, existingFileHelper);
+        public IafDamageTypeTagsProvider(PackOutput p_270719_, CompletableFuture<HolderLookup.Provider> p_270256_) {
+            super(p_270719_, p_270256_);
         }
 
         @Override

@@ -1,13 +1,13 @@
 package com.github.alexthe666.iceandfire.recipe;
 
 import com.github.alexthe666.iceandfire.IceAndFire;
+import io.github.fabricators_of_create.porting_lib.util.LazyRegistrar;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.entity.BannerPattern;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
 
 public class IafBannerPatterns {
-    public static final DeferredRegister<BannerPattern> BANNERS = DeferredRegister.create(Registries.BANNER_PATTERN, IceAndFire.MODID);
+    public static final LazyRegistrar<BannerPattern> BANNERS = LazyRegistrar.create(Registries.BANNER_PATTERN, IceAndFire.MODID);
     public static final RegistryObject<BannerPattern> PATTERN_FIRE = BANNERS.register("fire", () -> new BannerPattern("iaf_fire"));
     public static final RegistryObject<BannerPattern> PATTERN_ICE = BANNERS.register("ice", () -> new BannerPattern("iaf_ice"));
     public static final RegistryObject<BannerPattern> PATTERN_LIGHTNING = BANNERS.register("lightning", () -> new BannerPattern("iaf_lightning"));

@@ -17,6 +17,7 @@ import com.github.alexthe666.iceandfire.entity.props.EntityDataProvider;
 import com.github.alexthe666.iceandfire.entity.tile.TileEntityDragonforgeInput;
 import com.github.alexthe666.iceandfire.entity.util.*;
 import com.github.alexthe666.iceandfire.enums.EnumDragonEgg;
+import com.github.alexthe666.iceandfire.fabric.extensions.RiderSittingEntity;
 import com.github.alexthe666.iceandfire.inventory.ContainerDragon;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
 import com.github.alexthe666.iceandfire.item.ItemDragonArmor;
@@ -30,8 +31,11 @@ import com.github.alexthe666.iceandfire.pathfinding.raycoms.PathingStuckHandler;
 import com.github.alexthe666.iceandfire.pathfinding.raycoms.pathjobs.ICustomSizeNavigator;
 import com.github.alexthe666.iceandfire.world.DragonPosWorldData;
 import com.google.common.base.Predicate;
+import io.github.fabricators_of_create.porting_lib.entity.RemovalFromWorldListener;
+import io.github.fabricators_of_create.porting_lib.mixin.accessors.common.accessor.MinecraftServerAccessor;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
+import io.github.fabricators_of_create.porting_lib.util.NetworkHooks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -81,22 +85,15 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class EntityDragonBase extends TamableAnimal implements IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IDropArmor, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, ContainerListener {
+public abstract class EntityDragonBase extends TamableAnimal implements IPassabilityNavigator, ISyncMount, IFlyingMount, IMultipartEntity, IAnimatedEntity, IDragonFlute, IDeadMob, IVillagerFear, IAnimalFear, IDropArmor, IHasCustomizableAttributes, ICustomSizeNavigator, ICustomMoveController, ContainerListener, RemovalFromWorldListener, RiderSittingEntity {
 
     public static final int FLIGHT_CHANCE_PER_TICK = 1500;
     protected static final EntityDataAccessor<Boolean> SWIMMING = SynchedEntityData.defineId(EntityDragonBase.class, EntityDataSerializers.BOOLEAN);
@@ -507,7 +504,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     }
 
     public boolean canDestroyBlock(BlockPos pos, BlockState state) {
-        return state.getBlock().canEntityDestroy(state, level(), pos, this);
+        return state.canEntityDestroy(level(), pos, this);
     }
 
     @Override
@@ -823,29 +820,12 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
 
         this.dragonInventory.addListener(this);
         this.updateContainerEquipment();
-        this.itemHandler = LazyOptional.of(() -> new InvWrapper(this.dragonInventory));
+        //this.itemHandler = LazyOptional.of(() -> new InvWrapper(this.dragonInventory));
     }
 
     protected void updateContainerEquipment() {
         if (!this.level().isClientSide) {
             updateAttributes();
-        }
-    }
-
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction facing) {
-        if (this.isAlive() && capability == ForgeCapabilities.ITEM_HANDLER && itemHandler != null)
-            return itemHandler.cast();
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        if (itemHandler != null) {
-            LazyOptional<?> oldHandler = itemHandler;
-            itemHandler = null;
-            oldHandler.invalidate();
         }
     }
 
@@ -1315,7 +1295,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     public abstract ResourceLocation getDeadLootTable();
 
     public ItemStack getItemFromLootTable() {
-        LootTable loottable = this.level().getServer().getServerResources().managers().getLootData().getLootTable(getDeadLootTable());
+        LootTable loottable = ((MinecraftServerAccessor) this.level().getServer()).port_lib$getServerResources().managers().getLootData().getLootTable(getDeadLootTable());
         LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, this.level().damageSources().generic());
         for (ItemStack itemstack : loottable.getRandomItems(lootparams$builder.create(LootContextParamSets.ENTITY))) {
             return itemstack;
@@ -1434,7 +1414,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     }
 
     public void breakBlock(final BlockPos position) {
-        if (MinecraftForge.EVENT_BUS.post(new GenericGriefEvent(this, position.getX(), position.getY(), position.getZ()))) {
+        if (GenericGriefEvent.EVENT.invoker().onGrief(new GenericGriefEvent(this, position.getX(), position.getY(), position.getZ()))) {
             return;
         }
 
@@ -1460,7 +1440,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
         }
 
         if (doBreak) {
-            if (ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+            if (this.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) {
                 if (DragonUtils.canGrief(this)) {
                     // TODO :: make `force` ignore the dragon stage?
                     if (!isModelDead() && this.getDragonStage() >= 3 && (this.canMove() || this.getControllingPassenger() != null)) {
@@ -1709,7 +1689,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
     }
 
     @Override
-    public float getStepHeight() {
+    public float maxUpStep() {
         return Math.max(1.2F, 1.2F + (Math.min(this.getAgeInDays(), 125) - 25) * 1.8F / 100F);
     }
 
@@ -1720,7 +1700,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
         updateParts();
         this.prevDragonPitch = getDragonPitch();
         level().getProfiler().push("dragonLogic");
-        this.setMaxUpStep(getStepHeight());
+        this.setMaxUpStep(maxUpStep());
         isOverAir = isOverAirLogic();
         logic.updateDragonCommon();
         if (this.isModelDead()) {
@@ -2890,7 +2870,6 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
                 }
             }
         }
-        super.onRemovedFromWorld();
     }
 
     @Override

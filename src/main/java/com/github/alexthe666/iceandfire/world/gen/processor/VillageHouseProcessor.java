@@ -13,8 +13,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class VillageHouseProcessor extends StructureProcessor {
 
@@ -25,8 +24,9 @@ public class VillageHouseProcessor extends StructureProcessor {
     public VillageHouseProcessor() {
     }
 
+    @Nullable
     @Override
-    public StructureTemplate.StructureBlockInfo process(@NotNull LevelReader worldReader, @NotNull BlockPos pos, @NotNull BlockPos pos2, StructureTemplate.@NotNull StructureBlockInfo infoIn1, StructureTemplate.StructureBlockInfo infoIn2, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfo, StructureTemplate.StructureBlockInfo infoIn2, StructurePlaceSettings settings) {
         RandomSource random = settings.getRandom(infoIn2.pos());
         if (infoIn2.state().getBlock() == Blocks.CHEST) {
             CompoundTag tag = new CompoundTag();

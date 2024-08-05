@@ -5,9 +5,19 @@ import com.github.alexthe666.iceandfire.client.model.armor.ModelDragonsteelIceAr
 import com.github.alexthe666.iceandfire.client.model.armor.ModelDragonsteelLightningArmor;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import io.github.fabricators_of_create.porting_lib.client.armor.ArmorRendererRegistry;
+import io.github.fabricators_of_create.porting_lib.item.ArmorTextureItem;
+import io.github.fabricators_of_create.porting_lib.item.DamageableItem;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,17 +26,16 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import static com.github.alexthe666.iceandfire.item.IafItemRegistry.*;
 
-public class ItemDragonsteelArmor extends ArmorItem implements IProtectAgainstDragonItem {
+public class ItemDragonsteelArmor extends ArmorItem implements IProtectAgainstDragonItem, DamageableItem, ArmorTextureItem {
 
     private static final UUID[] ARMOR_MODIFIERS = new UUID[]{UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"), UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"), UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"), UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")};
     private final ArmorMaterial material;
@@ -36,29 +45,44 @@ public class ItemDragonsteelArmor extends ArmorItem implements IProtectAgainstDr
         super(material, slot, new Item.Properties()/*.tab(IceAndFire.TAB_ITEMS)*/);
         this.material = material;
         this.attributeModifierMultimap = createAttributeMap();
+
+        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
+            registerRenderer();
+        }
     }
 
-    @Override
-    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(new IClientItemExtensions() {
-            @Override
-            public @NotNull HumanoidModel<?> getHumanoidArmorModel(LivingEntity LivingEntity, ItemStack itemStack, EquipmentSlot armorSlot, HumanoidModel<?> _default) {
-                boolean inner = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD;
-                if (itemStack.getItem() instanceof ArmorItem) {
-                    ArmorMaterial armorMaterial = ((ArmorItem) itemStack.getItem()).getMaterial();
-                    if (DRAGONSTEEL_FIRE_ARMOR_MATERIAL.equals(armorMaterial))
-                        return new ModelDragonsteelFireArmor(inner);
-                    if (DRAGONSTEEL_ICE_ARMOR_MATERIAL.equals(armorMaterial))
-                        return new ModelDragonsteelIceArmor(inner);
-                    if (DRAGONSTEEL_LIGHTNING_ARMOR_MATERIAL.equals(armorMaterial))
-                        return new ModelDragonsteelLightningArmor(inner);
-                }
-                return _default;
+    @Environment(EnvType.CLIENT)
+    private Object2ObjectArrayMap<ArmorMaterial, HumanoidModel<?>> outerModelCache = new Object2ObjectArrayMap<>();
+    @Environment(EnvType.CLIENT)
+    private Object2ObjectArrayMap<ArmorMaterial, HumanoidModel<?>> innerModelCache = new Object2ObjectArrayMap<>();
 
+    private void registerRenderer() {
+        outerModelCache.put(DRAGONSTEEL_FIRE_ARMOR_MATERIAL, new ModelDragonsteelFireArmor(false));
+        outerModelCache.put(DRAGONSTEEL_ICE_ARMOR_MATERIAL, new ModelDragonsteelIceArmor(false));
+        outerModelCache.put(DRAGONSTEEL_LIGHTNING_ARMOR_MATERIAL, new ModelDragonsteelLightningArmor(false));
+
+        innerModelCache.put(DRAGONSTEEL_FIRE_ARMOR_MATERIAL, new ModelDragonsteelFireArmor(true));
+        innerModelCache.put(DRAGONSTEEL_ICE_ARMOR_MATERIAL, new ModelDragonsteelIceArmor(true));
+        innerModelCache.put(DRAGONSTEEL_LIGHTNING_ARMOR_MATERIAL, new ModelDragonsteelLightningArmor(true));
+
+        ArmorRendererRegistry.register(((matrices, vertexConsumers, stack, entity, armorSlot, light, contextModel, armorModel) -> {
+            if (!(stack.getItem() instanceof ArmorItem armorItem))
+                return;
+
+            boolean inner = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD;
+            var material = armorItem.getMaterial();
+            var texture = new ResourceLocation(getArmorTexture(stack, entity, armorSlot, ""));
+
+            HumanoidModel<?> model;
+            if (inner) {
+                model = innerModelCache.getOrDefault(material, armorModel);
+            } else {
+                model = outerModelCache.getOrDefault(material, armorModel);
             }
-        });
-    }
 
+            model.renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(texture)), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
+        }), this);
+    }
 
     //Workaround for armor attributes being registered before the config gets loaded
     private Multimap<Attribute, AttributeModifier> createAttributeMap() {
@@ -90,7 +114,7 @@ public class ItemDragonsteelArmor extends ArmorItem implements IProtectAgainstDr
         if (this.type != null) {
             return (this.getMaterial()).getDurabilityForType(this.type);
         }
-        return super.getMaxDamage(stack);
+        return DamageableItem.super.getMaxDamage(stack);
     }
 
     @Override

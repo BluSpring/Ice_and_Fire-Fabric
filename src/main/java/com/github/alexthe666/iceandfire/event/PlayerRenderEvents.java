@@ -1,15 +1,17 @@
 package com.github.alexthe666.iceandfire.event;
 
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import io.github.fabricators_of_create.porting_lib.event.client.RenderPlayerEvents;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.event.RenderPlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.UUID;
 
@@ -31,8 +33,14 @@ public class PlayerRenderEvents {
     public UUID[] betatesters = new UUID[]{
     };
 
-    @SubscribeEvent
-    public void playerRender(RenderPlayerEvent.Pre event) {
+    public PlayerRenderEvents() {
+        RenderPlayerEvents.PRE.register((player, renderer, partialTick, poseStack, buffer, packedLight) -> {
+            playerRender(player, poseStack, partialTick, buffer, packedLight);
+            return false;
+        });
+    }
+
+    public void playerRender(Player player, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource, int packedLight) {
         //TODO
         /*
         if (event.getEntityLiving() instanceof AbstractClientPlayerEntity) {
@@ -55,17 +63,17 @@ public class PlayerRenderEvents {
                 }
             }
         }*/
-        if (event.getEntity().getUUID().equals(ServerEvents.ALEX_UUID)) {
-            event.getPoseStack().pushPose();
-            float f2 = ((float) event.getEntity().tickCount - 1 + event.getPartialTick());
+        if (player.getUUID().equals(ServerEvents.ALEX_UUID)) {
+            poseStack.pushPose();
+            float f2 = ((float) player.tickCount - 1 + partialTick);
             float f3 = Mth.sin(f2 / 10.0F) * 0.1F + 0.1F;
-            event.getPoseStack().translate((float) 0, event.getEntity().getBbHeight() * 1.25F, (float) 0);
+            poseStack.translate((float) 0, player.getBbHeight() * 1.25F, (float) 0);
             float f4 = (f2 / 20.0F) * (180F / (float) Math.PI);
-            event.getPoseStack().mulPose(Axis.YP.rotationDegrees(f4));
-            event.getPoseStack().pushPose();
-            Minecraft.getInstance().getItemRenderer().renderStatic(Minecraft.getInstance().player, new ItemStack(IafItemRegistry.WEEZER_BLUE_ALBUM.get()), ItemDisplayContext.GROUND, false, event.getPoseStack(), event.getMultiBufferSource(), event.getEntity().level(), event.getPackedLight(), OverlayTexture.NO_OVERLAY, 0);
-            event.getPoseStack().popPose();
-            event.getPoseStack().popPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(f4));
+            poseStack.pushPose();
+            Minecraft.getInstance().getItemRenderer().renderStatic(Minecraft.getInstance().player, new ItemStack(IafItemRegistry.WEEZER_BLUE_ALBUM.get()), ItemDisplayContext.GROUND, false, poseStack, bufferSource, player.level(), packedLight, OverlayTexture.NO_OVERLAY, 0);
+            poseStack.popPose();
+            poseStack.popPose();
 
         }
     }

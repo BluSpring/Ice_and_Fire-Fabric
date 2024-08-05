@@ -12,8 +12,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProc
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorType;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import org.jetbrains.annotations.NotNull;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 public class DreadPortalProcessor extends StructureProcessor {
 
@@ -35,7 +34,7 @@ public class DreadPortalProcessor extends StructureProcessor {
 
     @Nullable
     @Override
-    public StructureTemplate.StructureBlockInfo process(@NotNull LevelReader world, @NotNull BlockPos pos, @NotNull BlockPos p_230386_3_, StructureTemplate.@NotNull StructureBlockInfo blockInfoIn, StructureTemplate.@NotNull StructureBlockInfo p_230386_5_, StructurePlaceSettings settings, @Nullable StructureTemplate template) {
+    public StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos offset, BlockPos pos, StructureTemplate.StructureBlockInfo blockInfoIn, StructureTemplate.StructureBlockInfo relativeBlockInfo, StructurePlaceSettings settings) {
         RandomSource random = settings.getRandom(pos);
         if (random.nextFloat() <= integrity) {
             if (blockInfoIn.state().getBlock() == Blocks.DIAMOND_BLOCK) {

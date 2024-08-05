@@ -1,10 +1,16 @@
 package com.github.alexthe666.iceandfire.entity.tile;
 
 import com.github.alexthe666.iceandfire.IceAndFire;
+import com.github.alexthe666.iceandfire.fabric.transfer.SidedInvWrapper;
 import com.github.alexthe666.iceandfire.inventory.ContainerPodium;
 import com.github.alexthe666.iceandfire.item.ItemDragonEgg;
 import com.github.alexthe666.iceandfire.item.ItemMyrmexEgg;
 import com.github.alexthe666.iceandfire.message.MessageUpdatePodium;
+import io.github.fabricators_of_create.porting_lib.block.CustomDataPacketHandlingBlockEntity;
+import io.github.fabricators_of_create.porting_lib.block.CustomRenderBoundingBoxBlockEntity;
+import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -22,26 +28,35 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
-public class TileEntityPodium extends BaseContainerBlockEntity implements WorldlyContainer {
+public class TileEntityPodium extends BaseContainerBlockEntity implements WorldlyContainer, CustomRenderBoundingBoxBlockEntity, CustomDataPacketHandlingBlockEntity {
 
     private static final int[] slotsTop = new int[]{0};
     public int ticksExisted;
     public int prevTicksExisted;
-    IItemHandler handlerUp = new SidedInvWrapper(this, net.minecraft.core.Direction.UP);
-    IItemHandler handlerDown = new SidedInvWrapper(this, Direction.DOWN);
-    net.minecraftforge.common.util.LazyOptional<? extends IItemHandler>[] handlers = SidedInvWrapper
+    SlottedStackStorage handlerUp = new SidedInvWrapper(this, net.minecraft.core.Direction.UP);
+    SlottedStackStorage handlerDown = new SidedInvWrapper(this, Direction.DOWN);
+    LazyOptional<? extends SlottedStackStorage>[] handlers = SidedInvWrapper
         .create(this, Direction.UP, Direction.DOWN);
     private NonNullList<ItemStack> stacks = NonNullList.withSize(1, ItemStack.EMPTY);
 
     public TileEntityPodium(BlockPos pos, BlockState state) {
         super(IafTileEntityRegistry.PODIUM.get(), pos, state);
+    }
+
+    static {
+        ItemStorage.SIDED.registerForBlockEntity(((blockEntity, direction) -> {
+            if (direction == null || blockEntity.remove)
+                return null;
+
+            if (direction == Direction.DOWN)
+                return blockEntity.handlers[1].orElse(null);
+            else
+                return blockEntity.handlers[0].orElse(null);
+        }), IafTileEntityRegistry.PODIUM.get());
     }
 
     //TODO: This must be easier to do
@@ -213,19 +228,6 @@ public class TileEntityPodium extends BaseContainerBlockEntity implements Worldl
                 return false;
         }
         return true;
-    }
-
-    @Override
-    public <T> net.minecraftforge.common.util.@NotNull LazyOptional<T> getCapability(
-        net.minecraftforge.common.capabilities.@NotNull Capability<T> capability, @Nullable Direction facing) {
-        if (!this.remove && facing != null
-            && capability == ForgeCapabilities.ITEM_HANDLER) {
-            if (facing == Direction.DOWN)
-                return handlers[1].cast();
-            else
-                return handlers[0].cast();
-        }
-        return super.getCapability(capability, facing);
     }
 
     @Nullable

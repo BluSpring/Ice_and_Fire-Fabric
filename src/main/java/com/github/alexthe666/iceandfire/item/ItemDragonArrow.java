@@ -2,16 +2,18 @@ package com.github.alexthe666.iceandfire.item;
 
 import com.github.alexthe666.iceandfire.entity.EntityDragonArrow;
 import com.github.alexthe666.iceandfire.entity.IafEntityRegistry;
+import io.github.fabricators_of_create.porting_lib.item.InfiniteArrowItem;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
-public class ItemDragonArrow extends ArrowItem {
+public class ItemDragonArrow extends ArrowItem implements InfiniteArrowItem {
     public ItemDragonArrow() {
         super(new Properties());
     }
@@ -24,10 +26,11 @@ public class ItemDragonArrow extends ArrowItem {
     @Override
     public boolean isInfinite(@NotNull final ItemStack arrow, @NotNull final ItemStack bow, @NotNull final Player player) {
         // Technically this would always return false - it's more a compat layer for Apotheosis' Endless Quiver enchantment
-        boolean isInfinite = super.isInfinite(arrow, bow, player);
+        //boolean isInfinite = InfiniteArrowItem.super.isInfinite(arrow, bow, player);
+        boolean isInfinite = false;
 
         if (!isInfinite) {
-            isInfinite = bow.getEnchantmentLevel(Enchantments.INFINITY_ARROWS) > 0 && getClass() == ItemDragonArrow.class;
+            isInfinite = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0 && getClass() == ItemDragonArrow.class;
         }
 
         return isInfinite;

@@ -8,6 +8,10 @@ import com.github.alexthe666.iceandfire.message.MessageUpdatePixieHouse;
 import com.github.alexthe666.iceandfire.message.MessageUpdatePixieHouseModel;
 import com.github.alexthe666.iceandfire.message.MessageUpdatePixieJar;
 import com.github.alexthe666.iceandfire.misc.IafSoundRegistry;
+import io.github.fabricators_of_create.porting_lib.block.CustomDataPacketHandlingBlockEntity;
+import io.github.fabricators_of_create.porting_lib.transfer.item.SlottedStackStorage;
+import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -21,14 +25,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 import java.util.UUID;
 
-public class TileEntityJar extends BlockEntity {
+public class TileEntityJar extends BlockEntity implements CustomDataPacketHandlingBlockEntity {
 
     private static final float PARTICLE_WIDTH = 0.3F;
     private static final float PARTICLE_HEIGHT = 0.6F;
@@ -42,7 +45,7 @@ public class TileEntityJar extends BlockEntity {
     public NonNullList<ItemStack> pixieItems = NonNullList.withSize(1, ItemStack.EMPTY);
     public float rotationYaw;
     public float prevRotationYaw;
-    net.minecraftforge.common.util.LazyOptional<? extends net.minecraftforge.items.IItemHandler> downHandler = PixieJarInvWrapper
+    LazyOptional<? extends SlottedStackStorage> downHandler = PixieJarInvWrapper
         .create(this);
     private final Random rand;
 
@@ -56,6 +59,16 @@ public class TileEntityJar extends BlockEntity {
         super(IafTileEntityRegistry.PIXIE_JAR.get(), pos, state);
         this.rand = new Random();
         this.hasPixie = !empty;
+    }
+
+    static {
+        ItemStorage.SIDED.registerForBlockEntity(((blockEntity, direction) -> {
+            if (direction == Direction.DOWN) {
+                return blockEntity.downHandler.orElse(null);
+            }
+
+            return null;
+        }), IafTileEntityRegistry.PIXIE_JAR.get());
     }
 
     @Override
@@ -145,13 +158,5 @@ public class TileEntityJar extends BlockEntity {
         if (!level.isClientSide) {
             IceAndFire.sendMSGToAll(new MessageUpdatePixieHouse(worldPosition.asLong(), false, 0));
         }
-    }
-
-    @Override
-    public <T> net.minecraftforge.common.util.@NotNull LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.@NotNull Capability<T> capability, @Nullable Direction facing) {
-        if (facing == Direction.DOWN
-            && capability == ForgeCapabilities.ITEM_HANDLER)
-            return downHandler.cast();
-        return super.getCapability(capability, facing);
     }
 }

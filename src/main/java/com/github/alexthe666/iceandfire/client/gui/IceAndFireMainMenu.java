@@ -11,7 +11,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraftforge.client.ForgeHooksClient;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -188,11 +187,10 @@ public class IceAndFireMainMenu extends TitleScreen {
         }
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager._enableBlend();
-        this.getMinecraft().font.drawInBatch("Ice and Fire " + ChatFormatting.YELLOW + IceAndFire.VERSION, 2, height - 10, 0xFFFFFFFF, false, ms.pose().last().pose(), ms.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
+        this.minecraft.font.drawInBatch("Ice and Fire " + ChatFormatting.YELLOW + IceAndFire.VERSION, 2, height - 10, 0xFFFFFFFF, false, ms.pose().last().pose(), ms.bufferSource(), Font.DisplayMode.NORMAL, 0, 15728880);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         ms.blit(MINECRAFT_TITLE_TEXTURES, width / 2 - 256 / 2, 10, 0, 0, 256, 64, 256, 64);
 
-        ForgeHooksClient.renderMainMenu(this, ms, this.getMinecraft().font, width, height, l);
         if (this.splashText != null) {
             ms.pose().pushPose();
             ms.pose().translate((this.width / 2 + 90), 70.0D, 0.0D);
@@ -206,14 +204,14 @@ public class IceAndFireMainMenu extends TitleScreen {
 
 
         String s1 = "Copyright Mojang AB. Do not distribute!";
-        Font font = this.getMinecraft().font;
-        ms.drawString(font, s1, width - this.getMinecraft().font.width(s1) - 2,
+        Font font = this.minecraft.font;
+        ms.drawString(font, s1, width - this.minecraft.font.width(s1) - 2,
             height - 10, 0xFFFFFFFF);
         for (int i = 0; i < this.renderables.size(); ++i) {
             this.renderables.get(i).render(ms, mouseX, mouseY, partialTicks);
         }
         for (int i = 0; i < this.renderables.size(); i++) {
-            renderables.get(i).render(ms, mouseX, mouseY, getMinecraft().getFrameTime());
+            renderables.get(i).render(ms, mouseX, mouseY, minecraft.getFrameTime());
         }
     }
 

@@ -3,6 +3,9 @@ package com.github.alexthe666.iceandfire.recipe;
 import com.github.alexthe666.iceandfire.IceAndFire;
 import com.github.alexthe666.iceandfire.entity.*;
 import com.github.alexthe666.iceandfire.item.IafItemRegistry;
+import io.github.fabricators_of_create.porting_lib.brewing.BrewingRecipeRegistry;
+import io.github.fabricators_of_create.porting_lib.util.LazyRegistrar;
+import io.github.fabricators_of_create.porting_lib.util.RegistryObject;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.AbstractProjectileDispenseBehavior;
 import net.minecraft.core.registries.Registries;
@@ -15,25 +18,27 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class IafRecipeRegistry {
-    public static final DeferredRegister<RecipeType<?>> RECIPE_TYPE = DeferredRegister.create(Registries.RECIPE_TYPE, IceAndFire.MODID);
-    public static final RegistryObject<RecipeType<DragonForgeRecipe>> DRAGON_FORGE_TYPE = RECIPE_TYPE.register("dragonforge", () -> RecipeType.simple(new ResourceLocation(IceAndFire.MODID, "dragonforge")));
+    public static final LazyRegistrar<RecipeType<?>> RECIPE_TYPE = LazyRegistrar.create(Registries.RECIPE_TYPE, IceAndFire.MODID);
+    public static final RegistryObject<RecipeType<DragonForgeRecipe>> DRAGON_FORGE_TYPE = RECIPE_TYPE.register("dragonforge", () -> simple(new ResourceLocation(IceAndFire.MODID, "dragonforge")));
 
-    @SubscribeEvent
-    public static void preInit(FMLCommonSetupEvent event) {
-        event.enqueueWork(() -> {
+    private static <T extends Recipe<?>> RecipeType<T> simple(ResourceLocation loc) {
+        return new RecipeType<>() {
+            @Override
+            public String toString() {
+                return loc.toString();
+            }
+        };
+    }
+
+    public static void preInit() {
+        {
             DispenserBlock.registerBehavior(IafItemRegistry.STYMPHALIAN_ARROW.get(), new AbstractProjectileDispenseBehavior() {
                 /**
                  * Return the projectile entity spawned by this dispense behavior.
@@ -137,7 +142,7 @@ public class IafRecipeRegistry {
             });
 
             BrewingRecipeRegistry.addRecipe(Ingredient.of(createPotion(Potions.WATER).getItem()), Ingredient.of(IafItemRegistry.SHINY_SCALES.get()), createPotion(Potions.WATER_BREATHING));
-        });
+        }
     }
 
     public static ItemStack createPotion(Potion potion) {

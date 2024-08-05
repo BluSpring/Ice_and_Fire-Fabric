@@ -14,8 +14,8 @@ import net.minecraft.world.entity.animal.horse.SkeletonHorse;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 

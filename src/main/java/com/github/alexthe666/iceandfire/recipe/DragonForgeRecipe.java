@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.NewRegistryEvent;
 import org.jetbrains.annotations.NotNull;
 
 
@@ -104,7 +103,7 @@ public class DragonForgeRecipe implements Recipe<TileEntityDragonforge> {
         return IafRecipeRegistry.DRAGON_FORGE_TYPE.get();
     }
 
-    public static class Serializer extends NewRegistryEvent implements RecipeSerializer<DragonForgeRecipe> {
+    public static class Serializer implements RecipeSerializer<DragonForgeRecipe> {
         @Override
         public @NotNull DragonForgeRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
             String dragonType = JsonUtils.getString(json, "dragon_type");
@@ -131,7 +130,7 @@ public class DragonForgeRecipe implements Recipe<TileEntityDragonforge> {
             buffer.writeUtf(recipe.dragonType);
             recipe.input.toNetwork(buffer);
             recipe.blood.toNetwork(buffer);
-            buffer.writeItemStack(recipe.result, true);
+            buffer.writeItem(recipe.result);
         }
     }
 
