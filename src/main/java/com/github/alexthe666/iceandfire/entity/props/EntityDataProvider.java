@@ -35,11 +35,7 @@ public class EntityDataProvider implements INBTSerializable<CompoundTag> {
 
             if (capability == null) {
                 capability = LazyOptional.ofObject(entity.getAttachedOrCreate(CapabilityHandler.ENTITY_DATA_CAPABILITY));
-                capability.addListener(ignored -> sidedCache.remove(key));
-
-                if (capability.isPresent()) {
-                    sidedCache.put(key, capability);
-                }
+                sidedCache.put(key, capability);
             }
 
             return capability;

@@ -528,7 +528,7 @@ public class ServerEvents {
     }
 
     public InteractionResult onEntityInteract(Player player, InteractionHand hand, Entity targetEntity) {
-        AtomicReference<InteractionResult> result = new AtomicReference<>(InteractionResult.PASS);
+        AtomicReference<InteractionResult> result = new AtomicReference<>(null);
 
         // Handle chain removal
         if (targetEntity instanceof LivingEntity target) {
