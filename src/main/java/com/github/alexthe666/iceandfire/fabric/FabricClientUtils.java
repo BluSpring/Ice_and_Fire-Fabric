@@ -4,6 +4,7 @@ import com.github.alexthe666.iceandfire.client.model.armor.*;
 import com.github.alexthe666.iceandfire.client.render.tile.IceAndFireTEISR;
 import com.github.alexthe666.iceandfire.entity.DragonType;
 import com.github.alexthe666.iceandfire.item.*;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.fabricators_of_create.porting_lib.client.armor.ArmorRendererRegistry;
 import io.github.fabricators_of_create.porting_lib.common.util.Lazy;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
@@ -13,8 +14,12 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 
@@ -27,7 +32,9 @@ public class FabricClientUtils {
         var innerModel = new ModelTrollArmor(false);
 
         ArmorRendererRegistry.register((matrices, vertexConsumers, stack, entity, armorSlot, light, contextModel, armorModel) -> {
-            HumanoidModel<?> model = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD ? innerModel : outerModel;
+            HumanoidModel<LivingEntity> model = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD ? innerModel : outerModel;
+            armorModel.copyPropertiesTo(model);
+            setupAnim(matrices, entity, model);
 
             model.renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(new ResourceLocation(armor.getArmorTexture(stack, entity, armorSlot, "")))), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         }, armor);
@@ -38,17 +45,19 @@ public class FabricClientUtils {
         var innerModel = new ModelSilverArmor(true);
 
         ArmorRendererRegistry.register((matrices, vertexConsumers, stack, entity, armorSlot, light, contextModel, armorModel) -> {
-            HumanoidModel<?> model = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD ? innerModel : outerModel;
+            HumanoidModel<LivingEntity> model = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD ? innerModel : outerModel;
+            armorModel.copyPropertiesTo(model);
+            setupAnim(matrices, entity, model);
 
             model.renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(new ResourceLocation(armor.getArmorTexture(stack, entity, armorSlot, "")))), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         }, armor);
     }
 
-    private static final Object2ObjectArrayMap<ArmorMaterial, HumanoidModel<?>> outerModelCache = new Object2ObjectArrayMap<>();
-    private static final Object2ObjectArrayMap<ArmorMaterial, HumanoidModel<?>> innerModelCache = new Object2ObjectArrayMap<>();
+    private static final Object2ObjectArrayMap<ArmorMaterial, HumanoidModel<LivingEntity>> outerModelCache = new Object2ObjectArrayMap<>();
+    private static final Object2ObjectArrayMap<ArmorMaterial, HumanoidModel<LivingEntity>> innerModelCache = new Object2ObjectArrayMap<>();
 
-    private static final Object2ObjectArrayMap<DragonType, HumanoidModel<?>> scaleOuterModelCache = new Object2ObjectArrayMap<>();
-    private static final Object2ObjectArrayMap<DragonType, HumanoidModel<?>> scaleInnerModelCache = new Object2ObjectArrayMap<>();
+    private static final Object2ObjectArrayMap<DragonType, HumanoidModel<LivingEntity>> scaleOuterModelCache = new Object2ObjectArrayMap<>();
+    private static final Object2ObjectArrayMap<DragonType, HumanoidModel<LivingEntity>> scaleInnerModelCache = new Object2ObjectArrayMap<>();
 
     public static void registerDragonsteelArmorRenderer(ItemDragonsteelArmor armor) {
         outerModelCache.put(DRAGONSTEEL_FIRE_ARMOR_MATERIAL, new ModelDragonsteelFireArmor(false));
@@ -95,24 +104,28 @@ public class FabricClientUtils {
             var dragonType = scaleArmor.armor_type.eggType.dragonType;
             var texture = new ResourceLocation(armor.getArmorTexture(stack, entity, armorSlot, ""));
 
-            HumanoidModel<?> model;
+            HumanoidModel<LivingEntity> model;
             if (inner) {
                 model = scaleInnerModelCache.getOrDefault(dragonType, armorModel);
             } else {
                 model = scaleOuterModelCache.getOrDefault(dragonType, armorModel);
             }
 
+            armorModel.copyPropertiesTo(model);
+            setupAnim(matrices, entity, model);
             model.renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(texture)), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         }), armor);
     }
 
     public static void registerSeaSerpentArmorRenderer(ItemSeaSerpentArmor armor) {
         var outerModel = new ModelSeaSerpentArmor(false);
-        var innerModel = new ModelSeaSerpentArmor(false);
+        var innerModel = new ModelSeaSerpentArmor(true);
 
         ArmorRendererRegistry.register((matrices, vertexConsumers, stack, entity, armorSlot, light, contextModel, armorModel) -> {
-            HumanoidModel<?> model = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD ? innerModel : outerModel;
+            HumanoidModel<LivingEntity> model = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD ? innerModel : outerModel;
+            armorModel.copyPropertiesTo(model);
 
+            setupAnim(matrices, entity, model);
             model.renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(new ResourceLocation(armor.getArmorTexture(stack, entity, armorSlot, "")))), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
         }, armor);
     }
@@ -123,5 +136,51 @@ public class FabricClientUtils {
         BuiltinItemRendererRegistry.INSTANCE.register(item, ((stack, mode, matrices, vertexConsumers, light, overlay) -> {
             renderer.get().renderByItem(stack, mode, matrices, vertexConsumers, light, overlay);
         }));
+    }
+
+    private static void setupAnim(PoseStack poseStack, LivingEntity entity, HumanoidModel<LivingEntity> model) {
+        float partialTicks = Minecraft.getInstance().getFrameTime();
+
+        poseStack.pushPose();
+
+        model.attackTime = entity.getAttackAnim(partialTicks);
+        model.riding = entity.isPassenger();
+        model.young = entity.isBaby();
+
+        float f = Mth.rotLerp(partialTicks, entity.yBodyRotO, entity.yBodyRot);
+        float g = Mth.rotLerp(partialTicks, entity.yHeadRotO, entity.yHeadRot);
+        float h = g - f;
+
+        float k = 0.0f;
+        Direction direction;
+
+        if (entity.hasPose(Pose.SLEEPING) && (direction = entity.getBedOrientation()) != null) {
+            k = entity.getEyeHeight(Pose.STANDING) - 0.1f;
+            poseStack.translate((float)(-direction.getStepX()) * k, 0.0f, (float)(-direction.getStepZ()) * k);
+        }
+
+        k = 0.0f;
+
+        float j = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot());
+        float l = 0.0f;
+
+        if (!entity.isPassenger() && entity.isAlive()) {
+            k = entity.walkAnimation.speed(partialTicks);
+            l = entity.walkAnimation.position(partialTicks);
+            if (entity.isBaby()) {
+                l *= 3.0f;
+            }
+            if (k > 1.0f) {
+                k = 1.0f;
+            }
+        }
+
+        model.swimAmount = entity.getSwimAmount(partialTicks);
+
+        float i = (float) (entity.tickCount) + partialTicks;
+
+        model.setupAnim(entity, l, k, i, h, j);
+
+        poseStack.popPose();
     }
 }
