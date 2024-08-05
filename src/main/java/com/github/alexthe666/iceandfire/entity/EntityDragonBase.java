@@ -34,7 +34,6 @@ import com.google.common.base.Predicate;
 import io.github.fabricators_of_create.porting_lib.entity.RemovalFromWorldListener;
 import io.github.fabricators_of_create.porting_lib.mixin.accessors.common.accessor.MinecraftServerAccessor;
 import io.github.fabricators_of_create.porting_lib.util.LazyOptional;
-import io.github.fabricators_of_create.porting_lib.util.NetworkHooks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -48,7 +47,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -519,7 +517,7 @@ public abstract class EntityDragonBase extends TamableAnimal implements IPassabi
 
     public void openInventory(Player player) {
         if (!this.level().isClientSide)
-            NetworkHooks.openScreen((ServerPlayer) player, getMenuProvider());
+            player.openMenu(getMenuProvider());
         IceAndFire.PROXY.setReferencedMob(this);
     }
 
