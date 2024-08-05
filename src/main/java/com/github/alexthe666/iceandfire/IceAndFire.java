@@ -6,6 +6,7 @@ import com.github.alexthe666.iceandfire.client.ClientProxy;
 import com.github.alexthe666.iceandfire.config.ConfigHolder;
 import com.github.alexthe666.iceandfire.entity.IafEntityRegistry;
 import com.github.alexthe666.iceandfire.entity.IafVillagerRegistry;
+import com.github.alexthe666.iceandfire.entity.props.CapabilityHandler;
 import com.github.alexthe666.iceandfire.entity.props.SyncEntityData;
 import com.github.alexthe666.iceandfire.entity.tile.IafTileEntityRegistry;
 import com.github.alexthe666.iceandfire.inventory.IafContainerRegistry;
@@ -83,6 +84,7 @@ public class IceAndFire implements ModInitializer {
         biomeModifiers.register("iaf_features", IafFeatureBiomeModifier::makeCodec);
          */
         IafWorldRegistry.addFeatures();
+        CapabilityHandler.init();
 
         IafItemRegistry.ITEMS.register();
         IafItemRegistry.init();

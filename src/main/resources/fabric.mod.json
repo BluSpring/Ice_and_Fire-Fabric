@@ -27,6 +27,9 @@
     "entrypoints": {
         "main": [
             "com.github.alexthe666.iceandfire.IceAndFire"
+        ],
+        "fabric-datagen": [
+            "com.github.alexthe666.iceandfire.datagen.DataGenerators"
         ]
     },
     "mixins": [

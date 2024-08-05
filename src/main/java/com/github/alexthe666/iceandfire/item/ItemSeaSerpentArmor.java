@@ -1,24 +1,18 @@
 package com.github.alexthe666.iceandfire.item;
 
 import com.github.alexthe666.citadel.server.item.CustomArmorMaterial;
-import com.github.alexthe666.iceandfire.client.model.armor.ModelSeaSerpentArmor;
 import com.github.alexthe666.iceandfire.enums.EnumSeaSerpent;
-import io.github.fabricators_of_create.porting_lib.client.armor.ArmorRendererRegistry;
+import com.github.alexthe666.iceandfire.fabric.FabricClientUtils;
 import io.github.fabricators_of_create.porting_lib.item.ArmorTextureItem;
 import io.github.fabricators_of_create.porting_lib.item.ArmorTickListeningItem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
@@ -26,10 +20,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
-import java.util.function.Consumer;
 
 public class ItemSeaSerpentArmor extends ArmorItem implements ArmorTextureItem, ArmorTickListeningItem {
 
@@ -60,14 +53,7 @@ public class ItemSeaSerpentArmor extends ArmorItem implements ArmorTextureItem, 
     }
 
     private void registerRenderer() {
-        var outerModel = new ModelSeaSerpentArmor(false);
-        var innerModel = new ModelSeaSerpentArmor(false);
-
-        ArmorRendererRegistry.register((matrices, vertexConsumers, stack, entity, armorSlot, light, contextModel, armorModel) -> {
-            HumanoidModel<?> model = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD ? innerModel : outerModel;
-
-            model.renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(new ResourceLocation(getArmorTexture(stack, entity, armorSlot, "")))), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-        }, this);
+        FabricClientUtils.registerSeaSerpentArmorRenderer(this);
     }
 
     @Override

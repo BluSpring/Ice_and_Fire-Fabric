@@ -15,8 +15,6 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.util.thread.BlockableEventLoop;
 import net.minecraft.world.entity.player.Player;
 
-import java.util.function.Supplier;
-
 public record SyncEntityData(int entityId, CompoundTag tag) implements CitadelPacket {
     public void encode(final FriendlyByteBuf buffer) {
         buffer.writeInt(entityId);
@@ -28,7 +26,7 @@ public record SyncEntityData(int entityId, CompoundTag tag) implements CitadelPa
     }
 
     public static void handle(final SyncEntityData message, Player player, BlockableEventLoop<?> loop) {
-        if (player.level().isClientSide()) {
+        if (player == null || player.level().isClientSide()) {
             loop.execute(() -> {
                 Player localPlayer = CapabilityHandler.getLocalPlayer();
 

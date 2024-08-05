@@ -1,39 +1,28 @@
 package com.github.alexthe666.iceandfire.item;
 
-import com.github.alexthe666.iceandfire.client.model.armor.ModelDragonsteelFireArmor;
-import com.github.alexthe666.iceandfire.client.model.armor.ModelDragonsteelIceArmor;
-import com.github.alexthe666.iceandfire.client.model.armor.ModelDragonsteelLightningArmor;
+import com.github.alexthe666.iceandfire.fabric.FabricClientUtils;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import io.github.fabricators_of_create.porting_lib.client.armor.ArmorRendererRegistry;
 import io.github.fabricators_of_create.porting_lib.item.ArmorTextureItem;
 import io.github.fabricators_of_create.porting_lib.item.DamageableItem;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
-
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 
-import static com.github.alexthe666.iceandfire.item.IafItemRegistry.*;
+import static com.github.alexthe666.iceandfire.item.IafItemRegistry.DRAGONSTEEL_FIRE_ARMOR_MATERIAL;
 
 public class ItemDragonsteelArmor extends ArmorItem implements IProtectAgainstDragonItem, DamageableItem, ArmorTextureItem {
 
@@ -51,37 +40,8 @@ public class ItemDragonsteelArmor extends ArmorItem implements IProtectAgainstDr
         }
     }
 
-    @Environment(EnvType.CLIENT)
-    private Object2ObjectArrayMap<ArmorMaterial, HumanoidModel<?>> outerModelCache = new Object2ObjectArrayMap<>();
-    @Environment(EnvType.CLIENT)
-    private Object2ObjectArrayMap<ArmorMaterial, HumanoidModel<?>> innerModelCache = new Object2ObjectArrayMap<>();
-
     private void registerRenderer() {
-        outerModelCache.put(DRAGONSTEEL_FIRE_ARMOR_MATERIAL, new ModelDragonsteelFireArmor(false));
-        outerModelCache.put(DRAGONSTEEL_ICE_ARMOR_MATERIAL, new ModelDragonsteelIceArmor(false));
-        outerModelCache.put(DRAGONSTEEL_LIGHTNING_ARMOR_MATERIAL, new ModelDragonsteelLightningArmor(false));
-
-        innerModelCache.put(DRAGONSTEEL_FIRE_ARMOR_MATERIAL, new ModelDragonsteelFireArmor(true));
-        innerModelCache.put(DRAGONSTEEL_ICE_ARMOR_MATERIAL, new ModelDragonsteelIceArmor(true));
-        innerModelCache.put(DRAGONSTEEL_LIGHTNING_ARMOR_MATERIAL, new ModelDragonsteelLightningArmor(true));
-
-        ArmorRendererRegistry.register(((matrices, vertexConsumers, stack, entity, armorSlot, light, contextModel, armorModel) -> {
-            if (!(stack.getItem() instanceof ArmorItem armorItem))
-                return;
-
-            boolean inner = armorSlot == EquipmentSlot.LEGS || armorSlot == EquipmentSlot.HEAD;
-            var material = armorItem.getMaterial();
-            var texture = new ResourceLocation(getArmorTexture(stack, entity, armorSlot, ""));
-
-            HumanoidModel<?> model;
-            if (inner) {
-                model = innerModelCache.getOrDefault(material, armorModel);
-            } else {
-                model = outerModelCache.getOrDefault(material, armorModel);
-            }
-
-            model.renderToBuffer(matrices, vertexConsumers.getBuffer(RenderType.armorCutoutNoCull(texture)), light, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-        }), this);
+        FabricClientUtils.registerDragonsteelArmorRenderer(this);
     }
 
     //Workaround for armor attributes being registered before the config gets loaded
