@@ -4,11 +4,13 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "ItemPropertiesAccessor",
+        "fabric.BlockMixin",
         "fabric.LivingEntityMixin",
         "gen.NoLakesInStructuresMixin",
         "gen.WorldGenRegionMixin"
     ],
     "client": [
+        "fabric.LivingEntityRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

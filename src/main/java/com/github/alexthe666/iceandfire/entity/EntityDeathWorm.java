@@ -459,7 +459,7 @@ public class EntityDeathWorm extends TamableAnimal implements ISyncMount, ICusto
         super.move(typeIn, pos);
     }
 
-    //@Override
+    @Override
     public @NotNull Vec3 collide(@NotNull Vec3 vec) {
         return ICustomCollisions.getAllowedMovementForEntity(this, vec);
     }

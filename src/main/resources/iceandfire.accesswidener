@@ -56,3 +56,6 @@ accessible method net/minecraft/world/damagesource/CombatTracker getMostSignific
 accessible field net/minecraft/client/renderer/entity/EntityRenderDispatcher renderers Ljava/util/Map;
 
 mutable field net/minecraft/client/renderer/RenderStateShard setupState Ljava/lang/Runnable;
+
+accessible method net/minecraft/world/entity/Entity collide (Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;
+extendable method net/minecraft/world/entity/Entity collide (Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/phys/Vec3;
